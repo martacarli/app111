@@ -1,0 +1,25 @@
+import React, { useState } from 'react';
+import { StatusBar } from 'expo-status-bar';
+import { SafeAreaView, StyleSheet } from 'react-native';
+
+import HomeScreen from './screens/HomeScreen';
+import RouteScreen from './screens/RouteScreen';
+
+export default function App() {
+  const [routeData, setRouteData] = useState(null);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar style="dark" />
+      {routeData ? (
+        <RouteScreen data={routeData} onBack={() => setRouteData(null)} />
+      ) : (
+        <HomeScreen onRouteGenerated={setRouteData} />
+      )}
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#fff' },
+});
