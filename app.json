@@ -1,25 +1,18 @@
-import React, { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, StyleSheet } from 'react-native';
-
-import HomeScreen from './screens/HomeScreen';
-import RouteScreen from './screens/RouteScreen';
-
-export default function App() {
-  const [routeData, setRouteData] = useState(null);
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="dark" />
-      {routeData ? (
-        <RouteScreen data={routeData} onBack={() => setRouteData(null)} />
-      ) : (
-        <HomeScreen onRouteGenerated={setRouteData} />
-      )}
-    </SafeAreaView>
-  );
+{
+  "expo": {
+    "name": "Safe Loop Run",
+    "slug": "safe-loop-run",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Used to build a running or walking route starting from where you are."
+      }
+    },
+    "android": {
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+    }
+  }
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-});
