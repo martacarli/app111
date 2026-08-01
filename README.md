@@ -71,14 +71,21 @@ Generate running/walking loops that are:
 
 ## Project Structure
 
-- `App.js` — top-level state machine switching between the four screens
-  below (home → route options → active run → run log).
+- `App.js` — top-level state machine switching between the five screens
+  below (disclaimer → home → route options → active run → run log).
+- `lib/disclaimer.js` / `screens/DisclaimerScreen.js` — first-launch
+  acknowledgement of the safety/GPS/coverage disclaimer, persisted with
+  AsyncStorage so it's only shown once.
+- `lib/ukCoverage.js` — a rough bounding-box check for England/Wales/NI,
+  used to distinguish "outside crime-data coverage" from "in coverage,
+  no hotspots found" instead of conflating the two.
 - `lib/policeData.js` — fetches recent street-level crime reports near a
   point from data.police.uk, walking backward through months since the
   data has a natural reporting lag.
 - `lib/safety.js` — buckets crime reports into a coarse grid, weights them
-  by severity (`CRIME_WEIGHTS`), and turns the highest-risk cells into
-  avoid-polygons for the routing engine.
+  by severity (`CRIME_WEIGHTS`), merges adjacent hotspot cells into a
+  single region (`groupIntoConnectedComponents`), and turns each region
+  into an avoid-polygon for the routing engine.
 - `lib/directions.js` — bearing math used to tag generated routes with a
   compass direction (N/E/S/W), since OpenRouteService's `round_trip` mode
   has no native direction parameter — this is what powers "Change Route."
@@ -105,26 +112,35 @@ Generate running/walking loops that are:
 ## Known Limitations
 
 - **Only works well in England, Wales, and Northern Ireland.** Outside
-  that, the crime API returns nothing, and the app falls back to a route
-  with no safety weighting.
+  that, `lib/ukCoverage.js` (a rough lat/lng bounding-box check, not a
+  real border) detects you're out of coverage and the app skips the
+  crime-data fetch entirely, showing a clear "outside coverage" note
+  instead of silently returning zero hotspots.
 - **No time-of-day adjustment.** The hotspot model treats a Tuesday
   afternoon and a Saturday 1am the same way.
 - **The severity weights in `CRIME_WEIGHTS`** are a first guess, not
   validated against anything.
-- **The grid-based hotspot model is intentionally simple** — hotspot
-  cells aren't merged, so avoid zones can look blocky at cell boundaries.
-  `threshold` (in `buildAvoidPolygons`) is the main tuning knob.
+- **The grid-based hotspot model merges adjacent flagged cells**
+  (`groupIntoConnectedComponents`) into one bounding-box region so
+  clusters don't show up as several disjoint rectangles — but it's still
+  an axis-aligned box per region, not a true polygon union, so an
+  L-shaped cluster's avoid-zone includes some non-hotspot area within its
+  bounding box. `threshold` (in `buildAvoidPolygons`) is the main tuning
+  knob.
 - **"Change Route" direction-awareness is a best-effort heuristic**, not
   a native ORS feature — it tags generated routes by which way they
   happen to bulge, so a requested direction can occasionally fall back to
   the closest match (e.g. near a coastline).
-- **Up to 9 OpenRouteService calls per "Find my route" tap** (3 variants
-  × up to 3 seeds each), worth tuning down if you're on a rate-limited
-  key.
+- **Up to 9 OpenRouteService calls per "Find my route" tap** in the worst
+  case (3 variants × up to 3 seeds each), though `generateSeedVariants`
+  now stops early once a candidate is "good enough" (clean loop, close to
+  target distance), so most taps use fewer. Still worth tuning down
+  further if you're on a rate-limited key.
 - **Reverse geocoding uses the public Nominatim API**, which has a strict
   rate limit (~1 request/second) — fine for this app's one-lookup-per-
   open pattern, but don't call it more often.
 - **Live progress tracking is only as good as GPS accuracy** — indoor or
   urban-canyon GPS drift can make the progress bar jump.
-- **No disclaimer/terms-of-service flow** beyond the text on the home
-  screen.
+- **The disclaimer gate is a one-time acknowledgement**, not reviewed
+  legal terms of service — treat it as a starting point, not a substitute
+  for a real ToS/privacy review before shipping to real users.

@@ -15,6 +15,7 @@ import { fetchCrimeData } from '../lib/policeData';
 import { buildAvoidPolygons } from '../lib/safety';
 import { reverseGeocode } from '../lib/geocode';
 import { distanceFromDuration, DEFAULT_PACE_MIN_PER_KM } from '../lib/pace';
+import { isLikelyUkPoliceCoverage } from '../lib/ukCoverage';
 
 export default function HomeScreen({ inputs, onChangeInputs, onTargetReady, onViewLog }) {
   const { mode, distanceKm, durationMin, paceMinPerKm, activity } = inputs;
@@ -73,7 +74,8 @@ export default function HomeScreen({ inputs, onChangeInputs, onTargetReady, onVi
 
     setLoading(true);
     try {
-      const crimes = await fetchCrimeData(startLat, startLng);
+      const inCoverageArea = isLikelyUkPoliceCoverage(startLat, startLng);
+      const crimes = inCoverageArea ? await fetchCrimeData(startLat, startLng) : [];
       const avoidPolygons = buildAvoidPolygons(crimes);
 
       onTargetReady({
@@ -85,6 +87,7 @@ export default function HomeScreen({ inputs, onChangeInputs, onTargetReady, onVi
         paceMinPerKm: parseFloat(paceMinPerKm),
         crimes,
         avoidPolygons,
+        inCoverageArea,
       });
     } catch (err) {
       console.error(err);

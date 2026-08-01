@@ -125,7 +125,7 @@ export default function RouteOptionsScreen({ target, cachedOptions, cachedPool, 
         {options.map((option, index) => {
           const km = (option.distanceMeters / 1000).toFixed(2);
           const durationSeconds = estimateDurationSeconds(option.distanceMeters, target.activity, target.paceMinPerKm);
-          const hotspotCellCount = target.avoidPolygons?.meta?.hotspotCellCount ?? 0;
+          const hotspotRegionCount = target.avoidPolygons?.meta?.hotspotRegionCount ?? 0;
           const crimeCount = target.crimes?.length ?? 0;
 
           return (
@@ -139,7 +139,9 @@ export default function RouteOptionsScreen({ target, cachedOptions, cachedPool, 
                 {option.directionBucket && <Text style={styles.cardDirection}>{option.directionBucket}</Text>}
               </View>
               <Text style={styles.cardStat}>{km} km · about {formatDuration(durationSeconds)}</Text>
-              <Text style={styles.cardMeta}>{describeSafety(hotspotCellCount, crimeCount)}</Text>
+              <Text style={styles.cardMeta}>
+                {describeSafety(hotspotRegionCount, crimeCount, { inCoverageArea: target.inCoverageArea })}
+              </Text>
               {option.fallback && <Text style={styles.cardFallback}>{option.fallbackReason}</Text>}
 
               <View style={styles.cardActions}>

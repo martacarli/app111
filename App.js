@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { SafeAreaView, StyleSheet, View, ActivityIndicator } from 'react-native';
 
+import DisclaimerScreen from './screens/DisclaimerScreen';
 import HomeScreen from './screens/HomeScreen';
 import RouteOptionsScreen from './screens/RouteOptionsScreen';
 import ActiveRunScreen from './screens/ActiveRunScreen';
 import RunLogScreen from './screens/RunLogScreen';
 import { DEFAULT_PACE_MIN_PER_KM } from './lib/pace';
+import { isDisclaimerAcknowledged } from './lib/disclaimer';
 
 const DEFAULT_HOME_INPUTS = {
   mode: 'duration', // 'distance' | 'duration'
@@ -17,11 +19,17 @@ const DEFAULT_HOME_INPUTS = {
 };
 
 export default function App() {
-  const [screen, setScreen] = useState('home');
+  const [screen, setScreen] = useState('checking');
   const [homeInputs, setHomeInputs] = useState(DEFAULT_HOME_INPUTS);
   const [target, setTarget] = useState(null);
   const [routeOptions, setRouteOptions] = useState(null);
   const [selectedRoute, setSelectedRoute] = useState(null);
+
+  useEffect(() => {
+    isDisclaimerAcknowledged().then((acknowledged) => {
+      setScreen(acknowledged ? 'home' : 'disclaimer');
+    });
+  }, []);
 
   const handleTargetReady = (nextTarget) => {
     setTarget(nextTarget);
@@ -46,6 +54,12 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
+      {screen === 'checking' && (
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" />
+        </View>
+      )}
+      {screen === 'disclaimer' && <DisclaimerScreen onAcknowledge={() => setScreen('home')} />}
       {screen === 'home' && (
         <HomeScreen
           inputs={homeInputs}
@@ -84,4 +98,5 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
+  centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });
