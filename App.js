@@ -42,6 +42,9 @@ export default function App() {
   const handleRunFinished = () => {
     setSelectedRoute(null);
     setSelectedTarget(null);
+    // Clear the previous plan so returning Home shows a fresh target-entry
+    // banner instead of the just-completed route's stale cards.
+    setPlanState({ target: null, options: null });
     setScreen('log');
   };
 
