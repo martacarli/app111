@@ -55,11 +55,14 @@ Generate running/walking loops that are:
 1. Install [Node.js](https://nodejs.org) if you don't have it.
 2. Get a free OpenRouteService API key at
    https://openrouteservice.org/dev/#/signup (instant, no payment info).
-3. Open `lib/config.js` and replace:
-   ```js
-   export const ORS_API_KEY = 'YOUR_OPENROUTESERVICE_API_KEY';
+3. Copy `.env.example` to `.env` and put your real key in it:
    ```
-   with your real key.
+   EXPO_PUBLIC_ORS_API_KEY=your-real-key-here
+   ```
+   `.env` is gitignored — your key stays local and is never committed.
+   `lib/config.js` reads it automatically (Expo loads `.env` files with
+   the `EXPO_PUBLIC_` prefix built in); it falls back to a placeholder
+   if `.env` is missing.
 4. In this project folder, run:
    ```
    npm install
