@@ -163,9 +163,12 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
       {!bannerOpen && (
         <View style={styles.collapsedBanner}>
           <TouchableOpacity style={styles.collapsedBannerRow} onPress={() => setBannerOpen(true)}>
-            <Text style={styles.collapsedBannerText}>
-              {target ? `${(target.targetLengthMeters / 1000).toFixed(1)} km · ${target.activity === 'walk' ? 'Walk' : 'Run'}` : 'Set your target'}
-            </Text>
+            <View style={styles.collapsedBannerLeft}>
+              <Logo size={18} />
+              <Text style={styles.collapsedBannerText}>
+                {target ? `${(target.targetLengthMeters / 1000).toFixed(1)} km · ${target.activity === 'walk' ? 'Walk' : 'Run'}` : 'Set your target'}
+              </Text>
+            </View>
             <Text style={styles.collapsedBannerEdit}>Edit</Text>
           </TouchableOpacity>
         </View>
@@ -344,6 +347,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
   },
+  collapsedBannerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   collapsedBannerText: { fontSize: 15, fontFamily: fonts.bold, color: colors.text },
   collapsedBannerEdit: { color: colors.primary, fontFamily: fonts.semiBold },
   cards: {

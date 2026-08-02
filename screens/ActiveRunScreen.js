@@ -15,6 +15,7 @@ import { addRunLogEntry, computeActualPace } from '../lib/runLog';
 import { computeRegionForCoordinates } from '../lib/mapRegion';
 import { colors, radii, shadow, fonts } from '../lib/theme';
 import CompletionModal from '../components/CompletionModal';
+import Logo from '../components/Logo';
 
 export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLat, startLng, locationLabel, onFinish, onCancel }) {
   const routeCoordinates = route.geojson.coordinates;
@@ -160,6 +161,10 @@ export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLa
           <Text style={styles.cancelBtnText}>Cancel</Text>
         </TouchableOpacity>
       )}
+      <View style={styles.brandBadge}>
+        <Logo size={16} />
+        <Text style={styles.brandBadgeText}>Circl'd</Text>
+      </View>
       <MapView style={styles.map} initialRegion={fittedRegion ?? undefined}>
         <Polyline coordinates={mapCoordinates} strokeWidth={4} strokeColor={colors.primarySoft} />
         {progressCoordinates.length > 1 && (
@@ -222,6 +227,24 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cancelBtnText: { color: colors.primary, fontFamily: fonts.semiBold },
+  brandBadge: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    zIndex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: colors.surface,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: radii.pill,
+    ...shadow,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 3,
+  },
+  brandBadgeText: { fontSize: 12, fontFamily: fonts.bold, color: colors.text },
   panel: {
     padding: 20,
     paddingBottom: 36,

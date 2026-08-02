@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator
 
 import { acknowledgeDisclaimer } from '../lib/disclaimer';
 import { colors, radii, shadow, fonts } from '../lib/theme';
+import ScreenHeader from '../components/ScreenHeader';
 
 export default function DisclaimerScreen({ onAcknowledge }) {
   const [saving, setSaving] = useState(false);
@@ -19,6 +20,7 @@ export default function DisclaimerScreen({ onAcknowledge }) {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
+        <ScreenHeader />
         <Text style={styles.title}>Before you start</Text>
 
         <Text style={styles.paragraph}>

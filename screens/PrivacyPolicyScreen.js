@@ -2,11 +2,13 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
 import { colors, radii, shadow, fonts } from '../lib/theme';
+import ScreenHeader from '../components/ScreenHeader';
 
 export default function PrivacyPolicyScreen({ onBack }) {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
+        <ScreenHeader />
         <Text style={styles.title}>Privacy Policy</Text>
 
         <Text style={styles.heading}>What Circl'd collects</Text>

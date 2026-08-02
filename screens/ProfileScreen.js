@@ -5,6 +5,7 @@ import { getRunLog, computeRunLogSummary } from '../lib/runLog';
 import { getProfile, saveProfileName } from '../lib/profile';
 import { formatDuration } from '../lib/pace';
 import { colors, radii, fonts } from '../lib/theme';
+import ScreenHeader from '../components/ScreenHeader';
 
 export default function ProfileScreen({ onViewDisclaimer, onViewPrivacyPolicy }) {
   const [summary, setSummary] = useState({ totalRuns: 0, totalDistanceMeters: 0, totalDurationSeconds: 0 });
@@ -30,6 +31,7 @@ export default function ProfileScreen({ onViewDisclaimer, onViewPrivacyPolicy })
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <ScreenHeader />
       <Text style={styles.title}>Profile</Text>
 
       {editing ? (

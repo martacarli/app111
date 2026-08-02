@@ -139,6 +139,9 @@ error on a real iPhone — if you ever bump `expo` further, keep the
   system-font weights scattered through the codebase.
 - `components/Logo.js` — the small circular loop mark shown next to the
   "Circl'd" title.
+- `components/ScreenHeader.js` — the small Logo + "Circl'd" wordmark
+  shown at the top of every screen (Plan, Disclaimer, Activity Log,
+  Profile, Privacy Policy, Active Run) for consistent branding.
 - `components/BottomTabBar.js` — persistent Home/Log/Profile tab bar.
 - `components/CompletionModal.js` — the animated "Run/Walk completed!"
   celebration (green success badge, confetti burst) shown when you stop

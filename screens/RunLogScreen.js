@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native
 import { getRunLog, deleteRunLogEntry } from '../lib/runLog';
 import { formatDuration, formatPace } from '../lib/pace';
 import { colors, radii, shadow, fonts } from '../lib/theme';
+import ScreenHeader from '../components/ScreenHeader';
 
 function formatDate(isoString) {
   const date = new Date(isoString);
@@ -54,6 +55,7 @@ export default function RunLogScreen({ onBack }) {
 
   return (
     <View style={styles.container}>
+      <ScreenHeader />
       <Text style={styles.title}>Activity Log</Text>
 
       {!loading && entries.length === 0 && (
