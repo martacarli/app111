@@ -18,7 +18,7 @@ export default function ProfileScreen({ onViewDisclaimer }) {
       <View style={styles.statsRow}>
         <View style={styles.stat}>
           <Text style={styles.statValue}>{summary.totalRuns}</Text>
-          <Text style={styles.statLabel}>Runs logged</Text>
+          <Text style={styles.statLabel}>Activities logged</Text>
         </View>
         <View style={styles.stat}>
           <Text style={styles.statValue}>{(summary.totalDistanceMeters / 1000).toFixed(1)}</Text>

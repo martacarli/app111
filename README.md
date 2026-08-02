@@ -20,7 +20,7 @@ Generate running/walking loops that are:
 - **Safety Layer**: If you're in UK coverage (England, Wales, Northern Ireland), the app fetches recent crime reports and routes around high-density hotspots. Non-UK locations show standard loops with a note explaining limited coverage.
 - **Run Tracking**: After selecting a route, tap "Start Run" to begin. A timer, progress bar, and visual progress indicator track your position along the planned route. Tap "Stop Run" to log the activity.
 - **Live Map**: Interactive map shows your real-time location, the planned route, and (during a run) a colored progress line showing how far you've traveled.
-- **Run Log**: Historical log of completed runs with distance, time, pace, location, and safety notes.
+- **Activity Log**: Historical log of completed runs and walks with distance, time, pace, location, and safety notes.
 - **Geolocation**: Uses device GPS to pinpoint your location and generate routes from where you are, with automatic location refresh each time you open the app.
 
 ## Technical Foundation
@@ -84,7 +84,7 @@ error on a real iPhone — if you ever bump `expo` further, keep the
 ## Project Structure
 
 - `App.js` — top-level state machine switching between screens
-  (disclaimer → plan → active run → run log / profile), plus the bottom
+  (disclaimer → plan → active run → activity log / profile), plus the bottom
   tab bar shown on the plan/log/profile screens.
 - `lib/disclaimer.js` / `screens/DisclaimerScreen.js` — first-launch
   acknowledgement of the safety/GPS/coverage disclaimer, persisted with
@@ -137,7 +137,7 @@ error on a real iPhone — if you ever bump `expo` further, keep the
 - `screens/ActiveRunScreen.js` — live map (fit to the full route),
   timer, progress tracking, Start/Stop Run, and a "Cancel" option before
   starting.
-- `screens/RunLogScreen.js` — history of past runs.
+- `screens/RunLogScreen.js` — the Activity Log: history of past runs and walks.
 - `screens/ProfileScreen.js` — aggregate run stats and a link back to
   the disclaimer.
 

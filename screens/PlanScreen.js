@@ -6,13 +6,7 @@ import MapView, { Polyline, Marker } from 'react-native-maps';
 import { fetchCrimeData } from '../lib/policeData';
 import { buildAvoidPolygons, describeSafety } from '../lib/safety';
 import { reverseGeocode } from '../lib/geocode';
-import {
-  distanceFromDuration,
-  DEFAULT_PACE_MIN_PER_KM,
-  DEFAULT_SPEED_KMH,
-  estimateDurationSeconds,
-  formatDuration,
-} from '../lib/pace';
+import { distanceFromDuration, DEFAULT_PACE_MIN_PER_KM, estimateDurationSeconds, formatDuration } from '../lib/pace';
 import { isLikelyUkPoliceCoverage } from '../lib/ukCoverage';
 import { ORS_API_KEY } from '../lib/config';
 import { generateRouteOptions, changeRouteDirection, relabelByProximity } from '../lib/routing';
@@ -227,6 +221,21 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
             )}
           </View>
 
+          <View style={styles.tabRow}>
+            <TouchableOpacity
+              style={[styles.tab, mode === 'distance' && styles.tabActive]}
+              onPress={() => onChangeInputs({ ...inputs, mode: 'distance' })}
+            >
+              <Text style={[styles.tabText, mode === 'distance' && styles.tabTextActive]}>Distance</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tab, mode === 'duration' && styles.tabActive]}
+              onPress={() => onChangeInputs({ ...inputs, mode: 'duration' })}
+            >
+              <Text style={[styles.tabText, mode === 'duration' && styles.tabTextActive]}>Duration</Text>
+            </TouchableOpacity>
+          </View>
+
           <Text style={styles.locationLine}>
             {locating ? 'Finding your location…' : locationLabel ? `Starting near ${locationLabel}` : 'Location unavailable'}
           </Text>
@@ -243,25 +252,6 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
               onPress={() => onChangeInputs({ ...inputs, activity: 'walk' })}
             >
               <Text style={activity === 'walk' ? styles.toggleTextActive : styles.toggleText}>Walk</Text>
-            </TouchableOpacity>
-          </View>
-
-          <Text style={styles.paceLine}>
-            Estimated pace: {activity === 'walk' ? DEFAULT_SPEED_KMH.walk : DEFAULT_SPEED_KMH.run} km/h
-          </Text>
-
-          <View style={styles.toggleRow}>
-            <TouchableOpacity
-              style={[styles.toggleBtn, mode === 'distance' && styles.toggleBtnActive]}
-              onPress={() => onChangeInputs({ ...inputs, mode: 'distance' })}
-            >
-              <Text style={mode === 'distance' ? styles.toggleTextActive : styles.toggleText}>By distance</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.toggleBtn, mode === 'duration' && styles.toggleBtnActive]}
-              onPress={() => onChangeInputs({ ...inputs, mode: 'duration' })}
-            >
-              <Text style={mode === 'duration' ? styles.toggleTextActive : styles.toggleText}>By duration</Text>
             </TouchableOpacity>
           </View>
 
@@ -364,7 +354,17 @@ const styles = StyleSheet.create({
   bannerHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
   closeBannerText: { color: '#1e6fff', fontWeight: '600' },
   locationLine: { fontSize: 13, color: '#1e6fff', marginBottom: 16, fontWeight: '600' },
-  paceLine: { fontSize: 12, color: '#555', marginBottom: 14 },
+  tabRow: { flexDirection: 'row', marginBottom: 16 },
+  tab: {
+    flex: 1,
+    alignItems: 'center',
+    paddingBottom: 10,
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+  },
+  tabActive: { borderBottomColor: '#1e6fff' },
+  tabText: { fontSize: 15, fontWeight: '600', color: '#888' },
+  tabTextActive: { color: '#222' },
   toggleRow: { flexDirection: 'row', marginBottom: 14, gap: 8 },
   toggleBtn: {
     flex: 1,

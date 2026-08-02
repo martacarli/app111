@@ -53,10 +53,10 @@ export default function RunLogScreen({ onBack }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Run Log</Text>
+      <Text style={styles.title}>Activity Log</Text>
 
       {!loading && entries.length === 0 && (
-        <Text style={styles.emptyText}>No runs logged yet. Finish a run to see it here.</Text>
+        <Text style={styles.emptyText}>No activities logged yet. Finish a run or walk to see it here.</Text>
       )}
 
       <FlatList
