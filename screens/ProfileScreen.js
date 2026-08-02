@@ -34,7 +34,7 @@ export default function ProfileScreen({ onViewDisclaimer }) {
         <Text style={styles.linkText}>Review safety disclaimer</Text>
       </TouchableOpacity>
 
-      <Text style={styles.aboutText}>Loop'd · v0.1.0</Text>
+      <Text style={styles.aboutText}>Circl'd · v0.1.0</Text>
     </ScrollView>
   );
 }

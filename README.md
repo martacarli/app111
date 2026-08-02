@@ -1,6 +1,6 @@
-# Loop'd: Mobile App Overview
+# Circl'd: Mobile App Overview
 
-Loop'd is a mobile app that generates safe, efficient loop routes back to your starting point. Unlike out-and-back routes that require retracing your steps, Loop'd creates genuine loops that use different streets on the return journey, minimizing backtracking and making runs more interesting and engaging.
+Circl'd is a mobile app that generates safe, efficient loop routes back to your starting point. Unlike out-and-back routes that require retracing your steps, Circl'd creates genuine loops that use different streets on the return journey, minimizing backtracking and making runs more interesting and engaging.
 
 ## Core Purpose
 

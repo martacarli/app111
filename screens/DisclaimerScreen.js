@@ -21,7 +21,7 @@ export default function DisclaimerScreen({ onAcknowledge }) {
         <Text style={styles.title}>Before you start</Text>
 
         <Text style={styles.paragraph}>
-          Loop'd generates running and walking loops back to your
+          Circl'd generates running and walking loops back to your
           starting point, and — where UK crime data is available — routes
           away from recently reported hotspots.
         </Text>

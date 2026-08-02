@@ -219,7 +219,7 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
       {bannerOpen && (
         <ScrollView style={styles.banner} contentContainerStyle={styles.bannerContent}>
           <View style={styles.bannerHeaderRow}>
-            <Text style={styles.title}>Loop'd</Text>
+            <Text style={styles.title}>Circl'd</Text>
             {options && (
               <TouchableOpacity onPress={() => setBannerOpen(false)}>
                 <Text style={styles.closeBannerText}>Close</Text>
