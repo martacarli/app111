@@ -181,20 +181,25 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
 
   const focused = options?.[focusedIndex];
 
+  // Hide the route while the banner is open (editing the target) — otherwise
+  // the previous route stays visible underneath, which reads as if it's
+  // still the current plan even though you're about to replace it.
+  const showRoute = !bannerOpen && focused;
+
   const mapRegion = useMemo(() => {
-    if (focused) {
+    if (showRoute) {
       return computeRegionForCoordinates(toMapCoordinates(focused));
     }
     if (startLat !== null && startLng !== null) {
       return computeRegionForCoordinates([{ latitude: startLat, longitude: startLng }], { minDelta: 0.02 });
     }
     return null;
-  }, [focused, startLat, startLng]);
+  }, [showRoute, focused, startLat, startLng]);
 
   return (
     <View style={styles.container}>
       <MapView style={styles.map} region={mapRegion ?? undefined}>
-        {focused && <Polyline coordinates={toMapCoordinates(focused)} strokeWidth={4} strokeColor="#1e6fff" />}
+        {showRoute && <Polyline coordinates={toMapCoordinates(focused)} strokeWidth={4} strokeColor="#1e6fff" />}
         {startLat !== null && startLng !== null && (
           <Marker coordinate={{ latitude: startLat, longitude: startLng }} title="Start / Finish" />
         )}
