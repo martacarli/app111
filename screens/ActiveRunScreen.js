@@ -23,7 +23,7 @@ import Logo from '../components/Logo';
 // opposite end.
 const PROGRESS_WINDOW_METERS = 250;
 
-export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLat, startLng, locationLabel, onFinish, onCancel }) {
+export default function ActiveRunScreen({ route, activity, mode, paceMinPerKm, startLat, startLng, locationLabel, onFinish, onCancel }) {
   const routeCoordinates = route.geojson.coordinates;
   const cumulativeDistances = useMemo(() => buildCumulativeDistances(routeCoordinates), [routeCoordinates]);
   const totalRouteDistanceMeters = route.distanceMeters;
@@ -202,7 +202,11 @@ export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLa
 
         {running && (
           <>
-            <Text style={styles.timer}>{formatStopwatch(elapsedSeconds)}</Text>
+            {mode === 'distance' ? (
+              <Text style={styles.timer}>{(traveledMeters / 1000).toFixed(2)} km</Text>
+            ) : (
+              <Text style={styles.timer}>{formatStopwatch(elapsedSeconds)}</Text>
+            )}
             <View style={styles.progressBarTrack}>
               <View style={[styles.progressBarFill, { width: `${Math.round(progressFraction * 100)}%` }]} />
             </View>

@@ -17,7 +17,7 @@ Generate running/walking loops that are:
 - **Dual Modes**: Select "Run" or "Walk" — the app uses a fixed default pace per activity (9.5 km/h run, 4.7 km/h walk) to estimate duration, independent of OpenRouteService's own assumptions.
 - **Stepper Target Entry**: Set your distance or duration with simple +/- buttons instead of typing a number.
 - **Safety Layer**: If you're in UK coverage (England, Wales, Northern Ireland), the app fetches recent crime reports and routes around high-density hotspots. Non-UK locations show standard loops with a note explaining limited coverage.
-- **Run Tracking**: After selecting a route, tap "Start Run" to begin. A timer, progress bar, and visual progress indicator track your position along the planned route. Tap "Stop Run" to log the activity.
+- **Run Tracking**: After selecting a route, tap "Start Run"/"Start Walk" to begin. If you planned by duration, a live stopwatch is shown; if you planned by distance, a live "distance covered" readout is shown instead, plus a progress bar and visual progress indicator tracking your position along the planned route either way. Tap "Stop" to log the activity.
 - **Live Map**: Interactive map shows your real-time location, the planned route, and (during a run) a colored progress line showing how far you've traveled.
 - **Activity Log**: Historical log of completed runs and walks with distance, time, pace, location, and safety notes.
 - **Geolocation**: Uses device GPS to pinpoint your location and generate routes from where you are, with automatic location refresh each time you open the app.

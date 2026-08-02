@@ -96,6 +96,7 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
         startLng,
         locationLabel,
         targetLengthMeters: targetDistanceMeters(),
+        mode,
         activity,
         paceMinPerKm,
         crimes,

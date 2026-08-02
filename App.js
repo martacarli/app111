@@ -135,6 +135,7 @@ export default function App() {
           <ActiveRunScreen
             route={selectedRoute}
             activity={selectedTarget.activity}
+            mode={selectedTarget.mode}
             paceMinPerKm={selectedTarget.paceMinPerKm}
             startLat={selectedTarget.startLat}
             startLng={selectedTarget.startLng}
