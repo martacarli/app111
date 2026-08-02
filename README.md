@@ -6,16 +6,17 @@ Safe Loop Run is a mobile app that generates safe, efficient loop routes back to
 
 Generate running/walking loops that are:
 
-1. **Real loops** — different streets outbound and return, no dead-ends or retracing
+1. **Real loops** — different streets outbound and return; avoiding retraced steps is the primary goal of route selection, only giving way to a retracing route as an extreme exception when no clean loop can be found at all
 2. **Safety-aware** — routed away from recent crime hotspots (UK only, using live data.police.uk data)
-3. **Flexible** — offered in three variants (shorter/planned/longer with ±4 min or ±1 km spacing)
-4. **Customizable** — choose between running or walking, plan by duration or distance
+3. **Flexible** — several ranked variants, closest to your target first, capped to no more than 10 min (duration mode) or 1 km (distance mode) over target
+4. **Customizable** — choose between running or walking, plan by duration or distance using simple +/- stepper buttons
 
 ## Key Features
 
-- **Three Route Options**: After entering a target time or distance, the app generates three routes and ranks them by actual closeness to your target — closest match first, furthest last — capped to no more than 10 minutes (duration mode) or 1 km (distance mode) over your target.
-- **Change Route Button**: Explore alternatives in different directions (North, East, South, West). The button cycles through directions and generates new loops, allowing you to find different route options without changing your distance/time target.
-- **Dual Modes**: Select "Run" (faster pace) or "Walk" (slower pace) — the app adjusts duration estimates based on realistic paces, independent of OpenRouteService's default walking assumptions.
+- **Multiple Ranked Route Options**: After setting a target time or distance, the app generates several routes and ranks them by actual closeness to your target — closest match first, furthest last — capped to no more than 10 minutes (duration mode) or 1 km (distance mode) over your target. Avoiding retraced streets takes priority over hitting that window exactly; retracing is only ever shown as a last resort.
+- **Change Route Button**: Explore alternatives in different directions (North, East, South, West). The button cycles through directions and generates new loops, allowing you to find different route options without changing your distance/time target. It quietly picks the best available match — no internal routing details are surfaced to you.
+- **Dual Modes**: Select "Run" or "Walk" — the app uses a fixed default pace per activity (9.5 km/h run, 4.7 km/h walk) to estimate duration, independent of OpenRouteService's own assumptions.
+- **Stepper Target Entry**: Set your distance or duration with simple +/- buttons instead of typing a number.
 - **Safety Layer**: If you're in UK coverage (England, Wales, Northern Ireland), the app fetches recent crime reports and routes around high-density hotspots. Non-UK locations show standard loops with a note explaining limited coverage.
 - **Run Tracking**: After selecting a route, tap "Start Run" to begin. A timer, progress bar, and visual progress indicator track your position along the planned route. Tap "Stop Run" to log the activity.
 - **Live Map**: Interactive map shows your real-time location, the planned route, and (during a run) a colored progress line showing how far you've traveled.
@@ -25,16 +26,16 @@ Generate running/walking loops that are:
 ## Technical Foundation
 
 - Routes are generated using OpenRouteService's `round_trip` mode with 10 waypoints for realistic street-following paths
-- The app prevents overlaps and dead-ends
-- Smart seed variation: tries 3 different route seeds and picks the best by retrace ratio and distance accuracy
+- Selection is tiered: clean (non-retracing) loops are considered before anything else, then staying within the preferred length window, then closeness to target — a retracing route is only shown if no clean loop was found among everything attempted
+- Wider seed variation: tries up to 5 seeds across up to 5 anchor lengths per search, picking the best by that tiered criteria (more attempts than a "minimal API" search would use, in exchange for stronger retrace-avoidance and more ranked options)
 - Crime data from UK police API used to determine safety of route — highest feasible safety route prioritised
 - Reverse geocoding shows your location name (neighborhood, city, etc.) in the UI
 
 ## User Flow
 
 1. App detects your location via GPS and shows it on the map, with a banner over the map to set your target
-2. Set target (e.g., 30 minutes) and choose Run or Walk
-3. Tap "Find my route" — the banner collapses to a small summary and 3 ranked route cards appear over the map
+2. Set target (e.g., 30 minutes) with +/- stepper buttons and choose Run or Walk
+3. Tap "Find my route" — the banner collapses to a small summary and several ranked route cards appear over the map
 4. Tap a card to preview it on the map; tap "Edit" on the summary banner anytime to change your target and try again
 5. Tap "Start with this route" to move to run tracking — a timer and live progress indicator track your position along the planned route (with a "Cancel" option before you tap "Start Run")
 6. Tap "Stop Run" when done; activity logs to run history
@@ -42,12 +43,12 @@ Generate running/walking loops that are:
 
 ## What Makes It Different
 
-- True loops (not out-and-back)
+- True loops (not out-and-back), with retrace-avoidance as the primary selection criterion
 - Safety-first routing (crime hotspot avoidance)
-- Multiple options in one generation (not just one route)
+- Multiple ranked options in one generation (not just one route)
 - Direction-aware variants (explore North, East, South, West alternatives)
 - Real-time GPS tracking during runs with visual progress
-- Minimal API overhead (efficient 3-seed approach, not aggressive retries)
+- No inner-workings surfaced to the user — route generation quietly does its best and shows only the result
 - Works offline for map display; syncs routes and data when connected
 
 ## Setup
@@ -103,12 +104,20 @@ error on a real iPhone — if you ever bump `expo` further, keep the
   compass direction (N/E/S/W), since OpenRouteService's `round_trip` mode
   has no native direction parameter — this is what powers "Change Route."
 - `lib/routing.js` — calls OpenRouteService for round-trip loops, tries
-  multiple seeds per target length, and picks the 3 candidates closest to
-  your true target (`selectClosestOptions`) — labeled by actual proximity
-  (`RANK_LABELS`/`relabelByProximity`), not by which anchor length they
-  were requested under — while enforcing the max-overage bound.
-- `lib/pace.js` — converts between duration and distance using your
-  chosen Run/Walk pace, independent of ORS's own duration estimate.
+  multiple seeds across multiple anchor lengths, and picks the closest
+  candidates to your true target (`selectClosestOptions`) using a tiered
+  priority: clean (non-retracing) loop first, then within the max-overage
+  bound, then closeness to target (`selectionTier`) — only falling back to
+  a retracing route when nothing clean was found at all. Labeled by actual
+  proximity (`buildRankLabels`/`relabelByProximity`), not by which anchor
+  length a candidate was requested under.
+- `lib/stepper.js` / `components/Stepper.js` — the +/- stepper control
+  used for distance/duration entry (`clampStep` is the pure clamping
+  logic, `Stepper` the UI).
+- `lib/pace.js` — fixed default speeds per activity (9.5 km/h run,
+  4.7 km/h walk — no manual input, no health-app integration yet) and the
+  duration/distance conversions built on them, independent of ORS's own
+  duration estimate.
 - `lib/progress.js` — projects a live GPS fix onto the planned route to
   drive the progress bar and the colored progress line during a run.
 - `lib/mapRegion.js` — computes a MapView region that fits a set of
@@ -153,12 +162,20 @@ error on a real iPhone — if you ever bump `expo` further, keep the
 - **"Change Route" direction-awareness is a best-effort heuristic**, not
   a native ORS feature — it tags generated routes by which way they
   happen to bulge, so a requested direction can occasionally fall back to
-  the closest match (e.g. near a coastline).
-- **Up to 9 OpenRouteService calls per "Find my route" tap** in the worst
-  case (3 variants × up to 3 seeds each), though `generateSeedVariants`
-  now stops early once a candidate is "good enough" (clean loop, close to
-  target distance), so most taps use fewer. Still worth tuning down
-  further if you're on a rate-limited key.
+  the closest available match (e.g. near a coastline). This is never
+  surfaced to the user as a message; the button just quietly returns the
+  best match it found.
+- **Up to 25 OpenRouteService calls per "Find my route" tap** in the
+  worst case (5 anchor lengths × up to 5 seeds each), though
+  `generateSeedVariants` stops early once a candidate is both a clean
+  loop and an accurate length match, so most taps use far fewer. This
+  trades away most of what used to be a "minimal API overhead" design in
+  exchange for stronger retrace-avoidance and more ranked options — worth
+  tuning down (fewer anchors/seeds) if you're on a rate-limited key.
+- **Pace is a fixed default per activity (9.5 km/h run, 4.7 km/h walk)**,
+  not personalized — there's no in-app run history or health-app
+  integration feeding it yet, so duration/distance conversions won't
+  reflect your actual pace.
 - **Reverse geocoding uses the public Nominatim API**, which has a strict
   rate limit (~1 request/second) — fine for this app's one-lookup-per-
   open pattern, but don't call it more often.

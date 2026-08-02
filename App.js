@@ -8,15 +8,13 @@ import ActiveRunScreen from './screens/ActiveRunScreen';
 import RunLogScreen from './screens/RunLogScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import BottomTabBar from './components/BottomTabBar';
-import { DEFAULT_PACE_MIN_PER_KM } from './lib/pace';
 import { isDisclaimerAcknowledged } from './lib/disclaimer';
 
 const DEFAULT_HOME_INPUTS = {
   mode: 'duration', // 'distance' | 'duration'
-  distanceKm: '5',
-  durationMin: '30',
+  distanceKm: 3,
+  durationMin: 30,
   activity: 'run', // 'run' | 'walk'
-  paceMinPerKm: String(DEFAULT_PACE_MIN_PER_KM.run),
 };
 
 const TAB_BAR_SCREENS = ['plan', 'log', 'profile'];

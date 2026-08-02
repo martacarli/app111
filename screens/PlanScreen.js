@@ -1,26 +1,24 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, ScrollView } from 'react-native';
 import * as Location from 'expo-location';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 
 import { fetchCrimeData } from '../lib/policeData';
 import { buildAvoidPolygons, describeSafety } from '../lib/safety';
 import { reverseGeocode } from '../lib/geocode';
-import { distanceFromDuration, DEFAULT_PACE_MIN_PER_KM, estimateDurationSeconds, formatDuration } from '../lib/pace';
+import {
+  distanceFromDuration,
+  DEFAULT_PACE_MIN_PER_KM,
+  DEFAULT_SPEED_KMH,
+  estimateDurationSeconds,
+  formatDuration,
+} from '../lib/pace';
 import { isLikelyUkPoliceCoverage } from '../lib/ukCoverage';
 import { ORS_API_KEY } from '../lib/config';
 import { generateRouteOptions, changeRouteDirection, relabelByProximity } from '../lib/routing';
 import { nextDirectionInCycle } from '../lib/directions';
 import { computeRegionForCoordinates } from '../lib/mapRegion';
+import Stepper from '../components/Stepper';
 
 const MAX_DISTANCE_OVERAGE_METERS = 1000; // "distance shouldn't be more than 1km greater"
 const MAX_DURATION_OVERAGE_MINUTES = 10; // "duration shouldn't be more than 10 min greater"
@@ -30,7 +28,8 @@ function toMapCoordinates(candidate) {
 }
 
 export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStateChange, onSelectRoute }) {
-  const { mode, distanceKm, durationMin, paceMinPerKm, activity } = inputs;
+  const { mode, distanceKm, durationMin, activity } = inputs;
+  const paceMinPerKm = DEFAULT_PACE_MIN_PER_KM[activity];
 
   const [locating, setLocating] = useState(true);
   const [startLat, setStartLat] = useState(initialPlan?.target?.startLat ?? null);
@@ -77,19 +76,11 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
     }
   };
 
-  const setActivity = (nextActivity) => {
-    onChangeInputs({
-      ...inputs,
-      activity: nextActivity,
-      paceMinPerKm: String(DEFAULT_PACE_MIN_PER_KM[nextActivity]),
-    });
-  };
-
   const targetDistanceMeters = () => {
     if (mode === 'distance') {
-      return parseFloat(distanceKm) * 1000;
+      return distanceKm * 1000;
     }
-    return distanceFromDuration(parseFloat(durationMin), parseFloat(paceMinPerKm));
+    return distanceFromDuration(durationMin, paceMinPerKm);
   };
 
   const handleFindRoute = async () => {
@@ -106,9 +97,7 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
       const avoidPolygons = buildAvoidPolygons(crimes);
 
       const maxOverageMeters =
-        mode === 'distance'
-          ? MAX_DISTANCE_OVERAGE_METERS
-          : distanceFromDuration(MAX_DURATION_OVERAGE_MINUTES, parseFloat(paceMinPerKm));
+        mode === 'distance' ? MAX_DISTANCE_OVERAGE_METERS : distanceFromDuration(MAX_DURATION_OVERAGE_MINUTES, paceMinPerKm);
 
       const nextTarget = {
         startLat,
@@ -116,7 +105,7 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
         locationLabel,
         targetLengthMeters: targetDistanceMeters(),
         activity,
-        paceMinPerKm: parseFloat(paceMinPerKm),
+        paceMinPerKm,
         crimes,
         avoidPolygons,
         inCoverageArea,
@@ -231,17 +220,21 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
           <View style={styles.toggleRow}>
             <TouchableOpacity
               style={[styles.toggleBtn, activity === 'run' && styles.toggleBtnActive]}
-              onPress={() => setActivity('run')}
+              onPress={() => onChangeInputs({ ...inputs, activity: 'run' })}
             >
               <Text style={activity === 'run' ? styles.toggleTextActive : styles.toggleText}>Run</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.toggleBtn, activity === 'walk' && styles.toggleBtnActive]}
-              onPress={() => setActivity('walk')}
+              onPress={() => onChangeInputs({ ...inputs, activity: 'walk' })}
             >
               <Text style={activity === 'walk' ? styles.toggleTextActive : styles.toggleText}>Walk</Text>
             </TouchableOpacity>
           </View>
+
+          <Text style={styles.paceLine}>
+            Estimated pace: {activity === 'walk' ? DEFAULT_SPEED_KMH.walk : DEFAULT_SPEED_KMH.run} km/h
+          </Text>
 
           <View style={styles.toggleRow}>
             <TouchableOpacity
@@ -259,36 +252,24 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
           </View>
 
           {mode === 'distance' ? (
-            <View style={styles.field}>
-              <Text style={styles.label}>Distance (km)</Text>
-              <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                value={distanceKm}
-                onChangeText={(value) => onChangeInputs({ ...inputs, distanceKm: value })}
-              />
-            </View>
-          ) : (
-            <View style={styles.field}>
-              <Text style={styles.label}>Duration (minutes)</Text>
-              <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                value={durationMin}
-                onChangeText={(value) => onChangeInputs({ ...inputs, durationMin: value })}
-              />
-            </View>
-          )}
-
-          <View style={styles.field}>
-            <Text style={styles.label}>Your pace (min per km)</Text>
-            <TextInput
-              style={styles.input}
-              keyboardType="numeric"
-              value={paceMinPerKm}
-              onChangeText={(value) => onChangeInputs({ ...inputs, paceMinPerKm: value })}
+            <Stepper
+              label="Distance"
+              value={distanceKm}
+              step={0.5}
+              min={0.5}
+              format={(v) => `${v.toFixed(1)} km`}
+              onChange={(next) => onChangeInputs({ ...inputs, distanceKm: next })}
             />
-          </View>
+          ) : (
+            <Stepper
+              label="Duration"
+              value={durationMin}
+              step={5}
+              min={5}
+              format={(v) => `${v} min`}
+              onChange={(next) => onChangeInputs({ ...inputs, durationMin: next })}
+            />
+          )}
 
           {error && <Text style={styles.errorText}>{error}</Text>}
 
@@ -326,10 +307,6 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
                 <Text style={styles.cardMeta}>
                   {describeSafety(hotspotRegionCount, crimeCount, { inCoverageArea: target.inCoverageArea })}
                 </Text>
-                {option.exceedsPreferredBound && (
-                  <Text style={styles.cardFallback}>Longer than your preferred range — closest we could find.</Text>
-                )}
-                {option.fallback && <Text style={styles.cardFallback}>{option.fallbackReason}</Text>}
 
                 <View style={styles.cardActions}>
                   <TouchableOpacity
@@ -379,6 +356,7 @@ const styles = StyleSheet.create({
   bannerHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
   closeBannerText: { color: '#1e6fff', fontWeight: '600' },
   locationLine: { fontSize: 13, color: '#1e6fff', marginBottom: 16, fontWeight: '600' },
+  paceLine: { fontSize: 12, color: '#555', marginBottom: 14 },
   toggleRow: { flexDirection: 'row', marginBottom: 14 },
   toggleBtn: {
     flex: 1,
@@ -390,17 +368,6 @@ const styles = StyleSheet.create({
   toggleBtnActive: { backgroundColor: '#222' },
   toggleText: { color: '#222', fontWeight: '600' },
   toggleTextActive: { color: '#fff', fontWeight: '600' },
-  field: { marginBottom: 14 },
-  label: { fontSize: 13, color: '#333', marginBottom: 6, fontWeight: '600' },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 16,
-    backgroundColor: '#fff',
-  },
   errorText: { color: '#c0392b', marginBottom: 12, fontSize: 13 },
   generateBtn: {
     backgroundColor: '#222',
@@ -472,7 +439,6 @@ const styles = StyleSheet.create({
   },
   cardStat: { fontSize: 17, fontWeight: '700', marginTop: 6 },
   cardMeta: { fontSize: 12, color: '#555', marginTop: 4, lineHeight: 16 },
-  cardFallback: { fontSize: 11, color: '#c0392b', marginTop: 4 },
   cardActions: { flexDirection: 'row', marginTop: 10 },
   changeBtn: {
     flex: 1,
