@@ -182,16 +182,16 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
 
           <View style={styles.tabRow}>
             <TouchableOpacity
-              style={[styles.tab, mode === 'distance' && styles.tabActive]}
-              onPress={() => onChangeInputs({ ...inputs, mode: 'distance' })}
-            >
-              <Text style={[styles.tabText, mode === 'distance' && styles.tabTextActive]}>Distance</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
               style={[styles.tab, mode === 'duration' && styles.tabActive]}
               onPress={() => onChangeInputs({ ...inputs, mode: 'duration' })}
             >
               <Text style={[styles.tabText, mode === 'duration' && styles.tabTextActive]}>Duration</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tab, mode === 'distance' && styles.tabActive]}
+              onPress={() => onChangeInputs({ ...inputs, mode: 'distance' })}
+            >
+              <Text style={[styles.tabText, mode === 'distance' && styles.tabTextActive]}>Distance</Text>
             </TouchableOpacity>
           </View>
 
