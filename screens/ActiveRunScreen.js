@@ -16,6 +16,9 @@ import { computeRegionForCoordinates } from '../lib/mapRegion';
 import { colors, radii, shadow, fonts } from '../lib/theme';
 import CompletionModal from '../components/CompletionModal';
 import Logo from '../components/Logo';
+import RecenterButton from '../components/RecenterButton';
+
+const RECENTER_DELTA = 0.006;
 
 // Generous enough for any realistic gap between GPS fixes (even sprinting
 // for a couple of seconds), while still much smaller than typical route
@@ -47,8 +50,12 @@ export default function ActiveRunScreen({ route, activity, mode, paceMinPerKm, s
   // can otherwise snap all the way to the finish while you're still
   // standing at the start.
   const progressAnchorRef = useRef(0);
+  const mapRef = useRef(null);
 
   useEffect(() => {
+    // Ask up front (not just on Start) so the native "you are here" dot
+    // can show as soon as this screen opens, before you've pressed Start.
+    Location.requestForegroundPermissionsAsync();
     return () => {
       stopTrackingInternals();
     };
@@ -167,6 +174,25 @@ export default function ActiveRunScreen({ route, activity, mode, paceMinPerKm, s
     onFinish(entry);
   };
 
+  const handleRecenter = async () => {
+    let lat = currentPosition?.lat;
+    let lng = currentPosition?.lng;
+    if (lat == null || lng == null) {
+      try {
+        const position = await Location.getCurrentPositionAsync({});
+        lat = position.coords.latitude;
+        lng = position.coords.longitude;
+      } catch (err) {
+        lat = startLat;
+        lng = startLng;
+      }
+    }
+    mapRef.current?.animateToRegion(
+      { latitude: lat, longitude: lng, latitudeDelta: RECENTER_DELTA, longitudeDelta: RECENTER_DELTA },
+      400
+    );
+  };
+
   const mapCoordinates = routeCoordinates.map(([lng, lat]) => ({ latitude: lat, longitude: lng }));
   const km = (totalRouteDistanceMeters / 1000).toFixed(2);
   const plannedDurationLabel = formatDuration((totalRouteDistanceMeters / 1000) * paceMinPerKm * 60);
@@ -177,25 +203,31 @@ export default function ActiveRunScreen({ route, activity, mode, paceMinPerKm, s
 
   return (
     <View style={styles.container}>
-      {!running && (
-        <TouchableOpacity style={styles.cancelBtn} onPress={onCancel}>
-          <Text style={styles.cancelBtnText}>Cancel</Text>
-        </TouchableOpacity>
-      )}
-      <View style={styles.brandBadge}>
-        <Logo size={16} />
-        <Text style={styles.brandBadgeText}>Circl'd</Text>
+      <View style={styles.mapArea}>
+        {!running && (
+          <TouchableOpacity style={styles.cancelBtn} onPress={onCancel}>
+            <Text style={styles.cancelBtnText}>Cancel</Text>
+          </TouchableOpacity>
+        )}
+        <View style={styles.brandBadge}>
+          <Logo size={16} />
+          <Text style={styles.brandBadgeText}>Circl'd</Text>
+        </View>
+        <MapView
+          ref={mapRef}
+          style={styles.map}
+          initialRegion={fittedRegion ?? undefined}
+          showsUserLocation
+          showsMyLocationButton={false}
+        >
+          <Polyline coordinates={mapCoordinates} strokeWidth={4} strokeColor={colors.routePlanned} />
+          {progressCoordinates.length > 1 && (
+            <Polyline coordinates={progressCoordinates} strokeWidth={5} strokeColor={colors.primary} />
+          )}
+          <Marker coordinate={{ latitude: startLat, longitude: startLng }} title="Start / Finish" />
+        </MapView>
+        <RecenterButton style={styles.recenterBtn} onPress={handleRecenter} />
       </View>
-      <MapView style={styles.map} initialRegion={fittedRegion ?? undefined}>
-        <Polyline coordinates={mapCoordinates} strokeWidth={4} strokeColor={colors.routePlanned} />
-        {progressCoordinates.length > 1 && (
-          <Polyline coordinates={progressCoordinates} strokeWidth={5} strokeColor={colors.primary} />
-        )}
-        <Marker coordinate={{ latitude: startLat, longitude: startLng }} title="Start / Finish" />
-        {currentPosition && (
-          <Marker coordinate={{ latitude: currentPosition.lat, longitude: currentPosition.lng }} title="You" pinColor={colors.primary} />
-        )}
-      </MapView>
 
       <View style={styles.panel}>
         <Text style={styles.stat}>{km} km · planned {plannedDurationLabel}</Text>
@@ -238,7 +270,14 @@ export default function ActiveRunScreen({ route, activity, mode, paceMinPerKm, s
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  mapArea: { flex: 1 },
   map: { flex: 1 },
+  recenterBtn: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    zIndex: 1,
+  },
   cancelBtn: {
     position: 'absolute',
     top: 16,

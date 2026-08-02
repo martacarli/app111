@@ -157,9 +157,10 @@ error on a real iPhone — if you ever bump `expo` further, keep the
   Run/Walk), and once generated, the ranked route cards. Tapping the
   collapsed summary reopens the banner to edit your target — no separate
   "back" screen needed.
-- `screens/ActiveRunScreen.js` — live map (fit to the full route),
-  timer, progress tracking, Start/Stop Run, and a "Cancel" option before
-  starting.
+- `screens/ActiveRunScreen.js` — live map (fit to the full route, native
+  "you are here" dot, free to pan with a `components/RecenterButton.js`
+  to snap back to your location), timer, progress tracking, Start/Stop,
+  and a "Cancel" option before starting.
 - `screens/RunLogScreen.js` — the Activity Log: history of past runs and walks.
 - `screens/ProfileScreen.js` — an editable display name, aggregate run
   stats, and links to the disclaimer and privacy policy.
