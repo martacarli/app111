@@ -153,11 +153,38 @@ error on a real iPhone — if you ever bump `expo` further, keep the
   starting.
 - `screens/RunLogScreen.js` — the Activity Log: history of past runs and walks.
 - `screens/ProfileScreen.js` — an editable display name, aggregate run
-  stats, and a link back to the disclaimer.
-- `assets/icon.png` / `assets/adaptive-icon.png` — the app icon (the
-  Circl'd loop mark on the brand purple). Only visible in a real
-  standalone build via `eas build` — Expo Go always shows its own icon
-  regardless of what a project sets here.
+  stats, and links to the disclaimer and privacy policy.
+- `screens/PrivacyPolicyScreen.js` / `PRIVACY.md` — the same privacy
+  policy content, in-app and as a standalone file. App stores require a
+  public URL for this, not just in-app text (see Publishing below).
+- `assets/icon.png` / `assets/adaptive-icon.png` / `assets/splash-icon.png`
+  — the app icon and splash mark (the Circl'd loop on the brand purple).
+  Only visible in a real standalone build via `eas build` — Expo Go
+  always shows its own icon and splash screen regardless of what a
+  project sets here.
+
+## Publishing
+
+What's done and ready in this repo:
+
+- App icon, adaptive icon, and splash screen, wired into `app.json`.
+- A privacy policy, both in-app (Profile → Privacy Policy) and as
+  `PRIVACY.md` for hosting at a public URL.
+- `eas.json` with development/preview/production build profiles.
+
+What only you can do (these need your own accounts/hardware, not just
+code changes):
+
+- **Host `PRIVACY.md` at a public URL** — e.g. push it to a GitHub Pages
+  site or any static host — both the App Store and Play Store require
+  this URL during submission.
+- **Test on a couple of real devices beyond Expo Go** — Expo Go is
+  close to, but not identical to, a standalone build.
+- **Enroll in the Apple Developer Program** ($99/year) and a Google Play
+  Console account ($25 one-time) if you want to submit to either store.
+- **Run `eas build`** (via `npx eas-cli build --platform ios` /
+  `--platform android`) once the accounts above exist, then
+  `eas submit` to send the build to each store.
 
 ## Known Limitations
 

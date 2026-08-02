@@ -6,7 +6,7 @@ import { getProfile, saveProfileName } from '../lib/profile';
 import { formatDuration } from '../lib/pace';
 import { colors, radii, fonts } from '../lib/theme';
 
-export default function ProfileScreen({ onViewDisclaimer }) {
+export default function ProfileScreen({ onViewDisclaimer, onViewPrivacyPolicy }) {
   const [summary, setSummary] = useState({ totalRuns: 0, totalDistanceMeters: 0, totalDurationSeconds: 0 });
   const [name, setName] = useState(null);
   const [editing, setEditing] = useState(false);
@@ -71,6 +71,10 @@ export default function ProfileScreen({ onViewDisclaimer }) {
 
       <TouchableOpacity style={styles.linkRow} onPress={onViewDisclaimer}>
         <Text style={styles.linkText}>Review safety disclaimer</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.linkRow} onPress={onViewPrivacyPolicy}>
+        <Text style={styles.linkText}>Privacy Policy</Text>
       </TouchableOpacity>
 
       <Text style={styles.aboutText}>Circl'd · v0.1.0</Text>

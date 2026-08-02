@@ -11,6 +11,7 @@ import {
 } from '@expo-google-fonts/poppins';
 
 import DisclaimerScreen from './screens/DisclaimerScreen';
+import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
 import PlanScreen from './screens/PlanScreen';
 import ActiveRunScreen from './screens/ActiveRunScreen';
 import RunLogScreen from './screens/RunLogScreen';
@@ -30,7 +31,7 @@ const TAB_BAR_SCREENS = ['plan', 'log', 'profile'];
 
 export default function App() {
   const [screen, setScreen] = useState('checking');
-  const [screenBeforeDisclaimer, setScreenBeforeDisclaimer] = useState('plan');
+  const [screenBeforeInfo, setScreenBeforeInfo] = useState('plan');
   const [homeInputs, setHomeInputs] = useState(DEFAULT_HOME_INPUTS);
   const [planState, setPlanState] = useState({ target: null, options: null });
   const [selectedRoute, setSelectedRoute] = useState(null);
@@ -73,8 +74,13 @@ export default function App() {
   };
 
   const handleViewDisclaimer = () => {
-    setScreenBeforeDisclaimer(screen);
+    setScreenBeforeInfo(screen);
     setScreen('disclaimer');
+  };
+
+  const handleViewPrivacyPolicy = () => {
+    setScreenBeforeInfo(screen);
+    setScreen('privacy');
   };
 
   const handleSelectTab = (tabKey) => {
@@ -110,7 +116,10 @@ export default function App() {
           </View>
         )}
         {screen === 'disclaimer' && (
-          <DisclaimerScreen onAcknowledge={() => setScreen(screenBeforeDisclaimer)} />
+          <DisclaimerScreen onAcknowledge={() => setScreen(screenBeforeInfo)} />
+        )}
+        {screen === 'privacy' && (
+          <PrivacyPolicyScreen onBack={() => setScreen(screenBeforeInfo)} />
         )}
         {screen === 'plan' && (
           <PlanScreen
@@ -135,7 +144,9 @@ export default function App() {
           />
         )}
         {screen === 'log' && <RunLogScreen onBack={() => handleSelectTab('plan')} />}
-        {screen === 'profile' && <ProfileScreen onViewDisclaimer={handleViewDisclaimer} />}
+        {screen === 'profile' && (
+          <ProfileScreen onViewDisclaimer={handleViewDisclaimer} onViewPrivacyPolicy={handleViewPrivacyPolicy} />
+        )}
       </View>
       {showTabBar && <BottomTabBar activeTab={screen} onSelect={handleSelectTab} />}
     </SafeAreaView>
