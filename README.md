@@ -52,6 +52,14 @@ Generate running/walking loops that are:
 
 ## Setup
 
+This project targets Expo SDK 54, which matches the current Expo Go app on
+the App Store / Play Store. Apple only allows installing the latest Expo
+Go build, so an older SDK here would fail to open with an "incompatible"
+error on a real iPhone — if you ever bump `expo` further, keep the
+`expo`/`react`/`react-native`/`expo-*` versions in `package.json` in sync
+(the exact compatible set for a given SDK ships in
+`node_modules/expo/bundledNativeModules.json` once installed).
+
 1. Install [Node.js](https://nodejs.org) if you don't have it.
 2. Get a free OpenRouteService API key at
    https://openrouteservice.org/dev/#/signup (instant, no payment info).
