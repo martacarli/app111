@@ -14,7 +14,6 @@ Generate running/walking loops that are:
 ## Key Features
 
 - **Multiple Ranked Route Options**: After setting a target time or distance, the app generates several routes and ranks them by actual closeness to your target — closest match first, furthest last — capped to no more than 10 minutes (duration mode) or 1 km (distance mode) over your target. Avoiding retraced streets takes priority over hitting that window exactly; retracing is only ever shown as a last resort.
-- **Change Route Button**: Explore alternatives in different directions (North, East, South, West). The button cycles through directions and generates new loops, allowing you to find different route options without changing your distance/time target. It quietly picks the best available match — no internal routing details are surfaced to you.
 - **Dual Modes**: Select "Run" or "Walk" — the app uses a fixed default pace per activity (9.5 km/h run, 4.7 km/h walk) to estimate duration, independent of OpenRouteService's own assumptions.
 - **Stepper Target Entry**: Set your distance or duration with simple +/- buttons instead of typing a number.
 - **Safety Layer**: If you're in UK coverage (England, Wales, Northern Ireland), the app fetches recent crime reports and routes around high-density hotspots. Non-UK locations show standard loops with a note explaining limited coverage.
@@ -47,7 +46,6 @@ Generate running/walking loops that are:
 - True loops (not out-and-back), with retrace-avoidance as the primary selection criterion
 - Safety-first routing (crime hotspot avoidance)
 - Multiple ranked options in one generation (not just one route)
-- Direction-aware variants (explore North, East, South, West alternatives)
 - Real-time GPS tracking during runs with visual progress
 - No inner-workings surfaced to the user — route generation quietly does its best and shows only the result
 - Works offline for map display; syncs routes and data when connected
@@ -103,7 +101,9 @@ error on a real iPhone — if you ever bump `expo` further, keep the
   into an avoid-polygon for the routing engine.
 - `lib/directions.js` — bearing math used to tag generated routes with a
   compass direction (N/E/S/W), since OpenRouteService's `round_trip` mode
-  has no native direction parameter — this is what powers "Change Route."
+  has no native direction parameter. Currently unused by the UI (see
+  Known Limitations — "Change Route" is temporarily removed) but kept
+  working and tested.
 - `lib/routing.js` — calls OpenRouteService for round-trip loops, tries
   multiple seeds across multiple anchor lengths, and picks the closest
   candidates to your true target (`selectClosestOptions`) using a tiered
@@ -132,9 +132,9 @@ error on a real iPhone — if you ever bump `expo` further, keep the
 - `components/BottomTabBar.js` — persistent Home/Log/Profile tab bar.
 - `screens/PlanScreen.js` — the map-first plan screen: GPS, a
   collapsible banner over the map for target entry (distance/duration,
-  Run/Walk), and once generated, the 3 ranked route cards with "Change
-  Route." Tapping the collapsed summary reopens the banner to edit your
-  target — no separate "back" screen needed.
+  Run/Walk), and once generated, the ranked route cards. Tapping the
+  collapsed summary reopens the banner to edit your target — no separate
+  "back" screen needed.
 - `screens/ActiveRunScreen.js` — live map (fit to the full route),
   timer, progress tracking, Start/Stop Run, and a "Cancel" option before
   starting.
@@ -173,26 +173,26 @@ error on a real iPhone — if you ever bump `expo` further, keep the
   ORS returned, not because our selection logic failed to look hard
   enough. If this keeps showing up in one specific area, it's more likely
   the street network there than a scoring bug.
-- **"Change Route" direction-awareness is a best-effort heuristic**, not
-  a native ORS feature — it tags generated routes by which way they
-  happen to bulge, so a requested direction can occasionally fall back to
-  the closest available match (e.g. near a coastline). This is never
-  surfaced to the user as a message; the button just quietly returns the
-  best match it found.
+- **"Change Route" is temporarily removed from the UI.** It caused
+  enough real issues (an uncaught rate-limit crash, and the button
+  routinely appearing to do nothing on cards further from the target)
+  that it's been pulled while those get sorted out, and it was
+  redundant anyway once multiple ranked options are already offered
+  per search. The underlying logic (`lib/routing.js`'s
+  `changeRouteDirection`, `lib/directions.js`) is untouched and fully
+  tested — re-adding a button that calls it is the only work needed to
+  bring it back.
 - **Up to 25 OpenRouteService calls per "Find my route" tap** in the
   worst case (5 anchor lengths × up to 5 seeds each), though
   `generateSeedVariants` stops early once a candidate is both a clean
   loop and an accurate length match, so most taps use far fewer. This
   trades away most of what used to be a "minimal API overhead" design in
   exchange for stronger retrace-avoidance and more ranked options — worth
-  tuning down (fewer anchors/seeds) if you're on a rate-limited key. A
-  "Find my route" tap followed quickly by a few "Change Route" taps can
-  add up to 30+ calls within a minute, which is enough to trip a free-tier
-  key's rate limit. When ORS returns a 429, the app degrades gracefully
-  (uses whatever candidates it already has, or shows a clear "rate
-  limited, try again" message on "Find my route") rather than crashing —
-  but it still means fewer or no options that round. If you hit this
-  often, reduce `seeds`/`anchorCount` in `generateRouteOptions`.
+  tuning down (fewer anchors/seeds) if you're on a rate-limited key. When
+  ORS returns a 429, the app degrades gracefully (uses whatever
+  candidates it already has, or shows a clear "rate limited, try again"
+  message) rather than crashing — but it still means fewer or no options
+  that round.
 - **Routes can go through places that aren't reliably open to the
   public** (a university campus, a gated park, etc.) — ORS's
   `foot-walking` profile routes over OpenStreetMap paths, and OSM doesn't

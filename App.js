@@ -23,7 +23,7 @@ export default function App() {
   const [screen, setScreen] = useState('checking');
   const [screenBeforeDisclaimer, setScreenBeforeDisclaimer] = useState('plan');
   const [homeInputs, setHomeInputs] = useState(DEFAULT_HOME_INPUTS);
-  const [planState, setPlanState] = useState({ target: null, options: null, candidatePool: [] });
+  const [planState, setPlanState] = useState({ target: null, options: null });
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [selectedTarget, setSelectedTarget] = useState(null);
 

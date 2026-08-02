@@ -9,8 +9,7 @@ import { reverseGeocode } from '../lib/geocode';
 import { distanceFromDuration, DEFAULT_PACE_MIN_PER_KM, estimateDurationSeconds, formatDuration } from '../lib/pace';
 import { isLikelyUkPoliceCoverage } from '../lib/ukCoverage';
 import { ORS_API_KEY } from '../lib/config';
-import { generateRouteOptions, changeRouteDirection, relabelByProximity } from '../lib/routing';
-import { nextDirectionInCycle } from '../lib/directions';
+import { generateRouteOptions } from '../lib/routing';
 import { computeRegionForCoordinates } from '../lib/mapRegion';
 import Stepper from '../components/Stepper';
 
@@ -32,22 +31,19 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
 
   const [target, setTarget] = useState(initialPlan?.target ?? null);
   const [options, setOptions] = useState(initialPlan?.options ?? null);
-  const [candidatePool, setCandidatePool] = useState(initialPlan?.candidatePool ?? []);
   const [bannerOpen, setBannerOpen] = useState(!initialPlan?.options);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [focusedIndex, setFocusedIndex] = useState(0);
-  const [changingIndex, setChangingIndex] = useState(null);
-  const [triedSeedsByIndex, setTriedSeedsByIndex] = useState({});
 
   useEffect(() => {
     refreshLocation();
   }, []);
 
   useEffect(() => {
-    onStateChange({ target, options, candidatePool });
-  }, [target, options, candidatePool]);
+    onStateChange({ target, options });
+  }, [target, options]);
 
   const refreshLocation = async () => {
     setLocating(true);
@@ -126,50 +122,13 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
 
       setTarget(nextTarget);
       setOptions(result.options);
-      setCandidatePool(result.candidatePool);
       setFocusedIndex(0);
-      setTriedSeedsByIndex({});
       setBannerOpen(false);
     } catch (err) {
       console.error(err);
       setError('Could not generate a route. Check your OpenRouteService API key and connection.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleChangeRoute = async (index) => {
-    const current = options[index];
-    const requestedDirection = nextDirectionInCycle(current.directionBucket ?? 'N');
-    setChangingIndex(index);
-    try {
-      const triedSeeds = triedSeedsByIndex[index] ?? [];
-      const updated = await changeRouteDirection({
-        candidatePool,
-        currentOption: current,
-        requestedDirection,
-        startLat: target.startLat,
-        startLng: target.startLng,
-        avoidPolygons: target.avoidPolygons,
-        apiKey: ORS_API_KEY,
-        triedSeeds,
-        targetLengthMeters: target.targetLengthMeters,
-        maxOverageMeters: target.maxOverageMeters,
-      });
-
-      const nextOptions = [...options];
-      nextOptions[index] = updated;
-      setOptions(relabelByProximity(nextOptions, target.targetLengthMeters));
-      setCandidatePool((pool) => [...pool, updated]);
-      setTriedSeedsByIndex((prev) => ({
-        ...prev,
-        [index]: [...triedSeeds, updated.seed],
-      }));
-      setFocusedIndex(index);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setChangingIndex(null);
     }
   };
 
@@ -295,28 +254,12 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
                 style={[styles.card, focusedIndex === index && styles.cardFocused]}
                 onPress={() => setFocusedIndex(index)}
               >
-                <View style={styles.cardHeaderRow}>
-                  <Text style={styles.cardLabel}>{option.rankLabel}</Text>
-                  {option.directionBucket && <Text style={styles.cardDirection}>{option.directionBucket}</Text>}
-                </View>
+                <Text style={styles.cardLabel}>{option.rankLabel}</Text>
                 <Text style={styles.cardStat}>{km} km · about {formatDuration(durationSeconds)}</Text>
 
-                <View style={styles.cardActions}>
-                  <TouchableOpacity
-                    style={styles.changeBtn}
-                    onPress={() => handleChangeRoute(index)}
-                    disabled={changingIndex === index}
-                  >
-                    {changingIndex === index ? (
-                      <ActivityIndicator size="small" />
-                    ) : (
-                      <Text style={styles.changeBtnText}>Change Route</Text>
-                    )}
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.selectBtn} onPress={() => onSelectRoute(option, target)}>
-                    <Text style={styles.selectBtnText}>Start with this route</Text>
-                  </TouchableOpacity>
-                </View>
+                <TouchableOpacity style={styles.selectBtn} onPress={() => onSelectRoute(option, target)}>
+                  <Text style={styles.selectBtnText}>Start with this route</Text>
+                </TouchableOpacity>
               </TouchableOpacity>
             );
           })}
@@ -428,36 +371,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   cardFocused: { borderColor: '#1e6fff' },
-  cardHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   cardLabel: { fontSize: 15, fontWeight: '700' },
-  cardDirection: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#1e6fff',
-    borderWidth: 1,
-    borderColor: '#1e6fff',
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
   cardStat: { fontSize: 17, fontWeight: '700', marginTop: 6 },
-  cardActions: { flexDirection: 'row', marginTop: 10 },
-  changeBtn: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#222',
-    borderRadius: 8,
-    paddingVertical: 10,
-    alignItems: 'center',
-    marginRight: 8,
-  },
-  changeBtnText: { fontWeight: '600' },
   selectBtn: {
-    flex: 1,
     backgroundColor: '#222',
     borderRadius: 8,
     paddingVertical: 10,
     alignItems: 'center',
+    marginTop: 10,
   },
   selectBtnText: { color: '#fff', fontWeight: '700' },
 });
