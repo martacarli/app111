@@ -27,6 +27,7 @@ Generate running/walking loops that are:
 
 - Routes are generated using OpenRouteService's `round_trip` mode with 10 waypoints for realistic street-following paths
 - Selection is tiered: clean (non-retracing) loops are considered before anything else, then staying within the preferred length window, then closeness to target — a retracing route is only shown if no clean loop was found among everything attempted
+- "Retracing" is detected two ways, combined by taking whichever flags it more strongly: `estimateRetraceRatio` catches walking the exact same street in both directions, and `estimateSelfProximityRatio` catches the case that misses — walking out on one street and back on a street that just runs alongside it, close enough that it's still covering the same ground
 - Wider seed variation: tries up to 5 seeds across up to 5 anchor lengths per search, picking the best by that tiered criteria (more attempts than a "minimal API" search would use, in exchange for stronger retrace-avoidance and more ranked options)
 - Crime data from UK police API used to determine safety of route — highest feasible safety route prioritised
 - Reverse geocoding shows your location name (neighborhood, city, etc.) in the UI
@@ -159,6 +160,19 @@ error on a real iPhone — if you ever bump `expo` further, keep the
   L-shaped cluster's avoid-zone includes some non-hotspot area within its
   bounding box. `threshold` (in `buildAvoidPolygons`) is the main tuning
   knob.
+- **Retrace/parallel-street detection is a heuristic, not a guarantee.**
+  `estimateSelfProximityRatio`'s 25m default proximity threshold and 8-point
+  minimum index gap are reasonable starting values, not validated against
+  real routes — a very narrow street grid could still register as
+  "parallel enough" to flag a genuinely different street, or the reverse.
+  More importantly: when OpenRouteService's `round_trip` engine simply
+  can't produce a clean loop at all for a given area and length (common
+  in cul-de-sac-heavy suburbs, campuses, or areas with sparse paths),
+  no amount of client-side filtering fixes that — the "extreme exception"
+  fallback shows a retracing route because that's genuinely the best
+  ORS returned, not because our selection logic failed to look hard
+  enough. If this keeps showing up in one specific area, it's more likely
+  the street network there than a scoring bug.
 - **"Change Route" direction-awareness is a best-effort heuristic**, not
   a native ORS feature — it tags generated routes by which way they
   happen to bulge, so a requested direction can occasionally fall back to
