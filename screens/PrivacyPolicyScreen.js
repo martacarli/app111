@@ -67,7 +67,7 @@ export default function PrivacyPolicyScreen({ onBack, onGoHome }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  content: { padding: 24, paddingTop: 60, paddingBottom: 16 },
+  content: { padding: 24, paddingTop: 16, paddingBottom: 16 },
   title: { fontSize: 24, fontFamily: fonts.extraBold, marginBottom: 16, color: colors.text },
   heading: { fontSize: 15, fontFamily: fonts.bold, marginTop: 16, marginBottom: 4, color: colors.text },
   paragraph: { fontSize: 14, fontFamily: fonts.regular, color: colors.textMuted, lineHeight: 20 },

@@ -87,7 +87,7 @@ export default function ProfileScreen({ onViewDisclaimer, onViewPrivacyPolicy, o
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, padding: 24, paddingTop: 60, backgroundColor: colors.background },
+  container: { flexGrow: 1, padding: 24, paddingTop: 16, backgroundColor: colors.background },
   title: { fontSize: 24, fontFamily: fonts.extraBold, marginBottom: 16, color: colors.text },
   nameRow: {
     flexDirection: 'row',

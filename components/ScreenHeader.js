@@ -4,11 +4,14 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Logo from './Logo';
 import { colors, fonts } from '../lib/theme';
 
-export default function ScreenHeader({ size = 20, onPress }) {
+// Mirrors PlanScreen's banner header row exactly (same Logo size, same
+// title size/weight/color) so every screen's top brand mark looks and
+// sits identically to the Home screen's.
+export default function ScreenHeader({ onPress }) {
   const content = (
     <>
-      <Logo size={size} />
-      <Text style={styles.text}>Circl'd</Text>
+      <Logo size={26} />
+      <Text style={styles.title}>Circl'd</Text>
     </>
   );
 
@@ -24,6 +27,6 @@ export default function ScreenHeader({ size = 20, onPress }) {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12 },
-  text: { fontSize: 13, fontFamily: fonts.bold, color: colors.textMuted },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
+  title: { fontSize: 22, fontFamily: fonts.extraBold, color: colors.text, letterSpacing: 0.2 },
 });

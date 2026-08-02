@@ -77,7 +77,7 @@ export default function RunLogScreen({ onBack, onGoHome }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, paddingTop: 60, backgroundColor: colors.background },
+  container: { flex: 1, padding: 24, paddingTop: 16, backgroundColor: colors.background },
   title: { fontSize: 24, fontFamily: fonts.extraBold, marginBottom: 16, color: colors.text },
   emptyText: { color: colors.textMuted, marginBottom: 16, fontFamily: fonts.regular },
   list: { paddingBottom: 16 },
