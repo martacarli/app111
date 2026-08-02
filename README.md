@@ -13,7 +13,7 @@ Generate running/walking loops that are:
 
 ## Key Features
 
-- **Three Route Options**: After entering a target time or distance, the app generates three routes: one slightly shorter, one matching your request, and one slightly longer. This gives runners choice when exact targets aren't achievable.
+- **Three Route Options**: After entering a target time or distance, the app generates three routes and ranks them by actual closeness to your target — closest match first, furthest last — capped to no more than 10 minutes (duration mode) or 1 km (distance mode) over your target.
 - **Change Route Button**: Explore alternatives in different directions (North, East, South, West). The button cycles through directions and generates new loops, allowing you to find different route options without changing your distance/time target.
 - **Dual Modes**: Select "Run" (faster pace) or "Walk" (slower pace) — the app adjusts duration estimates based on realistic paces, independent of OpenRouteService's default walking assumptions.
 - **Safety Layer**: If you're in UK coverage (England, Wales, Northern Ireland), the app fetches recent crime reports and routes around high-density hotspots. Non-UK locations show standard loops with a note explaining limited coverage.
@@ -32,13 +32,13 @@ Generate running/walking loops that are:
 
 ## User Flow
 
-1. App detects your location via GPS and shows it on the map
+1. App detects your location via GPS and shows it on the map, with a banner over the map to set your target
 2. Set target (e.g., 30 minutes) and choose Run or Walk
-3. Tap "Find my route" — generates 3 options
-4. Pick one; map zooms to show the full loop
-5. Tap "Start Run" to track progress with a timer and live progress indicator
+3. Tap "Find my route" — the banner collapses to a small summary and 3 ranked route cards appear over the map
+4. Tap a card to preview it on the map; tap "Edit" on the summary banner anytime to change your target and try again
+5. Tap "Start with this route" to move to run tracking — a timer and live progress indicator track your position along the planned route (with a "Cancel" option before you tap "Start Run")
 6. Tap "Stop Run" when done; activity logs to run history
-7. Want a different loop? Tap "Change Route" to explore variations, or "Try a Different Length" to adjust your target
+7. Bottom tab bar (Home / Log / Profile) is available throughout for quick navigation
 
 ## What Makes It Different
 
@@ -82,11 +82,13 @@ error on a real iPhone — if you ever bump `expo` further, keep the
 
 ## Project Structure
 
-- `App.js` — top-level state machine switching between the five screens
-  below (disclaimer → home → route options → active run → run log).
+- `App.js` — top-level state machine switching between screens
+  (disclaimer → plan → active run → run log / profile), plus the bottom
+  tab bar shown on the plan/log/profile screens.
 - `lib/disclaimer.js` / `screens/DisclaimerScreen.js` — first-launch
   acknowledgement of the safety/GPS/coverage disclaimer, persisted with
-  AsyncStorage so it's only shown once.
+  AsyncStorage so it's only shown once (also reachable again from
+  Profile → "Review safety disclaimer").
 - `lib/ukCoverage.js` — a rough bounding-box check for England/Wales/NI,
   used to distinguish "outside crime-data coverage" from "in coverage,
   no hotspots found" instead of conflating the two.
@@ -101,24 +103,34 @@ error on a real iPhone — if you ever bump `expo` further, keep the
   compass direction (N/E/S/W), since OpenRouteService's `round_trip` mode
   has no native direction parameter — this is what powers "Change Route."
 - `lib/routing.js` — calls OpenRouteService for round-trip loops, tries
-  multiple seeds per target length, scores candidates by retrace ratio and
-  distance accuracy, and generates the three shorter/planned/longer
-  options.
+  multiple seeds per target length, and picks the 3 candidates closest to
+  your true target (`selectClosestOptions`) — labeled by actual proximity
+  (`RANK_LABELS`/`relabelByProximity`), not by which anchor length they
+  were requested under — while enforcing the max-overage bound.
 - `lib/pace.js` — converts between duration and distance using your
   chosen Run/Walk pace, independent of ORS's own duration estimate.
 - `lib/progress.js` — projects a live GPS fix onto the planned route to
   drive the progress bar and the colored progress line during a run.
+- `lib/mapRegion.js` — computes a MapView region that fits a set of
+  points (used to fit the whole loop on screen, instead of a fixed zoom
+  that can crop a bigger route).
 - `lib/geocode.js` — reverse geocodes your coordinates to a readable
   place name.
 - `lib/runLog.js` / `lib/runLogCore.js` — local run history, persisted
-  with AsyncStorage.
-- `screens/HomeScreen.js` — GPS + target entry (distance/duration) +
-  Run/Walk toggle.
-- `screens/RouteOptionsScreen.js` — the three route cards, "Change
-  Route," and "Try a Different Length."
-- `screens/ActiveRunScreen.js` — live map, timer, progress tracking,
-  Start/Stop Run.
+  with AsyncStorage, plus `computeRunLogSummary` for the Profile screen's
+  totals.
+- `components/BottomTabBar.js` — persistent Home/Log/Profile tab bar.
+- `screens/PlanScreen.js` — the map-first plan screen: GPS, a
+  collapsible banner over the map for target entry (distance/duration,
+  Run/Walk), and once generated, the 3 ranked route cards with "Change
+  Route." Tapping the collapsed summary reopens the banner to edit your
+  target — no separate "back" screen needed.
+- `screens/ActiveRunScreen.js` — live map (fit to the full route),
+  timer, progress tracking, Start/Stop Run, and a "Cancel" option before
+  starting.
 - `screens/RunLogScreen.js` — history of past runs.
+- `screens/ProfileScreen.js` — aggregate run stats and a link back to
+  the disclaimer.
 
 ## Known Limitations
 

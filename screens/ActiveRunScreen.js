@@ -12,8 +12,9 @@ import {
 } from '../lib/progress';
 import { formatStopwatch, formatDuration } from '../lib/pace';
 import { addRunLogEntry, computeActualPace } from '../lib/runLog';
+import { computeRegionForCoordinates } from '../lib/mapRegion';
 
-export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLat, startLng, locationLabel, onFinish }) {
+export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLat, startLng, locationLabel, onFinish, onCancel }) {
   const routeCoordinates = route.geojson.coordinates;
   const cumulativeDistances = useMemo(() => buildCumulativeDistances(routeCoordinates), [routeCoordinates]);
   const totalRouteDistanceMeters = route.distanceMeters;
@@ -138,18 +139,19 @@ export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLa
   const mapCoordinates = routeCoordinates.map(([lng, lat]) => ({ latitude: lat, longitude: lng }));
   const km = (totalRouteDistanceMeters / 1000).toFixed(2);
   const plannedDurationLabel = formatDuration((totalRouteDistanceMeters / 1000) * paceMinPerKm * 60);
+  // Fit the whole planned loop on screen instead of a fixed tight zoom
+  // around the start point — otherwise a bigger loop looks like it
+  // "disappeared" when this screen mounts.
+  const fittedRegion = useMemo(() => computeRegionForCoordinates(mapCoordinates), [mapCoordinates]);
 
   return (
     <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        initialRegion={{
-          latitude: startLat,
-          longitude: startLng,
-          latitudeDelta: 0.02,
-          longitudeDelta: 0.02,
-        }}
-      >
+      {!running && (
+        <TouchableOpacity style={styles.cancelBtn} onPress={onCancel}>
+          <Text style={styles.cancelBtnText}>Cancel</Text>
+        </TouchableOpacity>
+      )}
+      <MapView style={styles.map} initialRegion={fittedRegion ?? undefined}>
         <Polyline coordinates={mapCoordinates} strokeWidth={4} strokeColor="#c7d4ea" />
         {progressCoordinates.length > 1 && (
           <Polyline coordinates={progressCoordinates} strokeWidth={5} strokeColor="#1e6fff" />
@@ -188,6 +190,22 @@ export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLa
 const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { flex: 1 },
+  cancelBtn: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    zIndex: 1,
+    backgroundColor: '#fff',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 3,
+  },
+  cancelBtnText: { color: '#1e6fff', fontWeight: '600' },
   panel: {
     padding: 20,
     paddingBottom: 36,
