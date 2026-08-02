@@ -13,7 +13,7 @@ import {
 import { formatStopwatch, formatDuration } from '../lib/pace';
 import { addRunLogEntry, computeActualPace } from '../lib/runLog';
 import { computeRegionForCoordinates } from '../lib/mapRegion';
-import { colors, radii, shadow } from '../lib/theme';
+import { colors, radii, shadow, fonts } from '../lib/theme';
 import CompletionModal from '../components/CompletionModal';
 
 export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLat, startLng, locationLabel, onFinish, onCancel }) {
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     elevation: 3,
   },
-  cancelBtnText: { color: colors.primary, fontWeight: '600' },
+  cancelBtnText: { color: colors.primary, fontFamily: fonts.semiBold },
   panel: {
     padding: 20,
     paddingBottom: 36,
@@ -231,8 +231,8 @@ const styles = StyleSheet.create({
     ...shadow,
     shadowOffset: { width: 0, height: -2 },
   },
-  stat: { fontSize: 18, fontWeight: '700', marginBottom: 10, color: colors.text },
-  timer: { fontSize: 40, fontWeight: '800', textAlign: 'center', marginBottom: 10, color: colors.text },
+  stat: { fontSize: 18, fontFamily: fonts.bold, marginBottom: 10, color: colors.text },
+  timer: { fontSize: 40, fontFamily: fonts.extraBold, textAlign: 'center', marginBottom: 10, color: colors.text },
   progressBarTrack: {
     height: 8,
     borderRadius: 4,
@@ -245,5 +245,5 @@ const styles = StyleSheet.create({
   actionBtn: { borderRadius: radii.md, paddingVertical: 14, alignItems: 'center' },
   startBtn: { backgroundColor: colors.primary },
   stopBtn: { backgroundColor: colors.danger },
-  actionBtnText: { color: colors.white, fontWeight: '700', fontSize: 16 },
+  actionBtnText: { color: colors.white, fontFamily: fonts.bold, fontSize: 16 },
 });

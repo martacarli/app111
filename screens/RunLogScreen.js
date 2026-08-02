@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native
 
 import { getRunLog, deleteRunLogEntry } from '../lib/runLog';
 import { formatDuration, formatPace } from '../lib/pace';
-import { colors, radii, shadow } from '../lib/theme';
+import { colors, radii, shadow, fonts } from '../lib/theme';
 
 function formatDate(isoString) {
   const date = new Date(isoString);
@@ -76,8 +76,8 @@ export default function RunLogScreen({ onBack }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 24, paddingTop: 60, backgroundColor: colors.background },
-  title: { fontSize: 24, fontWeight: '700', marginBottom: 16, color: colors.text },
-  emptyText: { color: colors.textMuted, marginBottom: 16 },
+  title: { fontSize: 24, fontFamily: fonts.extraBold, marginBottom: 16, color: colors.text },
+  emptyText: { color: colors.textMuted, marginBottom: 16, fontFamily: fonts.regular },
   list: { paddingBottom: 16 },
   row: {
     flexDirection: 'row',
@@ -88,10 +88,10 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
   },
   rowMain: { flex: 1, paddingRight: 12 },
-  rowTitle: { fontSize: 15, fontWeight: '700', color: colors.text },
-  rowStat: { fontSize: 13, color: colors.textMuted, marginTop: 2 },
-  rowMeta: { fontSize: 12, color: colors.textFaint, marginTop: 2 },
-  deleteText: { color: colors.danger, fontWeight: '600' },
+  rowTitle: { fontSize: 15, fontFamily: fonts.bold, color: colors.text },
+  rowStat: { fontSize: 13, color: colors.textMuted, marginTop: 2, fontFamily: fonts.regular },
+  rowMeta: { fontSize: 12, color: colors.textFaint, marginTop: 2, fontFamily: fonts.regular },
+  deleteText: { color: colors.danger, fontFamily: fonts.semiBold },
   backBtn: {
     backgroundColor: colors.primary,
     borderRadius: radii.md,
@@ -100,5 +100,5 @@ const styles = StyleSheet.create({
     marginTop: 12,
     ...shadow,
   },
-  backBtnText: { color: colors.white, fontWeight: '700' },
+  backBtnText: { color: colors.white, fontFamily: fonts.bold },
 });

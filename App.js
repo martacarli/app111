@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, StyleSheet, View, ActivityIndicator } from 'react-native';
+import {
+  useFonts,
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+  Poppins_800ExtraBold,
+} from '@expo-google-fonts/poppins';
 
 import DisclaimerScreen from './screens/DisclaimerScreen';
 import PlanScreen from './screens/PlanScreen';
@@ -27,6 +35,14 @@ export default function App() {
   const [planState, setPlanState] = useState({ target: null, options: null });
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [selectedTarget, setSelectedTarget] = useState(null);
+
+  const [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
+    Poppins_800ExtraBold,
+  });
 
   useEffect(() => {
     isDisclaimerAcknowledged().then((acknowledged) => {
@@ -61,6 +77,17 @@ export default function App() {
   };
 
   const showTabBar = TAB_BAR_SCREENS.includes(screen);
+
+  if (!fontsLoaded) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar style="dark" />
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>

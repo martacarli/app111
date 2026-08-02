@@ -1,12 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
 
-import { colors, radii, shadow } from '../lib/theme';
+import { colors, radii, shadow, fonts } from '../lib/theme';
 import { formatDuration } from '../lib/pace';
 
 const BURST_DOTS = [0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => ({
   angle,
-  color: i % 3 === 0 ? colors.celebrationGold : i % 3 === 1 ? colors.primary : colors.primarySoft,
+  color: i % 3 === 0 ? colors.celebrationGold : i % 3 === 1 ? colors.success : colors.successSoft,
 }));
 const BURST_RADIUS = 70;
 
@@ -101,7 +101,7 @@ export default function CompletionModal({ visible, activity, distanceMeters, dur
 
           <Animated.View style={{ opacity: buttonOpacity, width: '100%' }}>
             <TouchableOpacity style={styles.doneBtn} onPress={onDismiss}>
-              <Text style={styles.doneBtnText}>Nice work</Text>
+              <Text style={styles.doneBtnText}>Log Run</Text>
             </TouchableOpacity>
           </Animated.View>
         </View>
@@ -148,19 +148,19 @@ const styles = StyleSheet.create({
     height: 84,
     borderRadius: 42,
     borderWidth: 3,
-    borderColor: colors.primary,
+    borderColor: colors.success,
   },
   badge: {
     width: 84,
     height: 84,
     borderRadius: 42,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.success,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  badgeCheck: { color: colors.white, fontSize: 40, fontWeight: '800' },
-  title: { fontSize: 20, fontWeight: '700', color: colors.text, marginBottom: 4, textAlign: 'center' },
-  subtitle: { fontSize: 15, color: colors.textMuted, marginBottom: 20, textAlign: 'center' },
+  badgeCheck: { color: colors.white, fontSize: 40, fontFamily: fonts.extraBold },
+  title: { fontSize: 20, fontFamily: fonts.extraBold, color: colors.text, marginBottom: 4, textAlign: 'center' },
+  subtitle: { fontSize: 15, color: colors.textMuted, marginBottom: 20, textAlign: 'center', fontFamily: fonts.medium },
   doneBtn: {
     backgroundColor: colors.primary,
     borderRadius: radii.md,
@@ -168,5 +168,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
-  doneBtnText: { color: colors.white, fontWeight: '700', fontSize: 16 },
+  doneBtnText: { color: colors.white, fontFamily: fonts.bold, fontSize: 16 },
 });

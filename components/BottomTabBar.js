@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-import { colors } from '../lib/theme';
+import { colors, fonts } from '../lib/theme';
 
 const TABS = [
   { key: 'plan', label: 'Home' },
@@ -36,6 +36,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
   },
-  label: { fontSize: 13, fontWeight: '600', color: colors.textFaint },
+  label: { fontSize: 13, fontFamily: fonts.semiBold, color: colors.textFaint },
   labelActive: { color: colors.primary },
 });

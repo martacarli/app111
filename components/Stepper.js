@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 import { clampStep } from '../lib/stepper';
-import { colors } from '../lib/theme';
+import { colors, fonts } from '../lib/theme';
 
 export default function Stepper({ label, value, step, min, max, format, onChange }) {
   const displayValue = format ? format(value) : String(value);
@@ -31,7 +31,7 @@ export default function Stepper({ label, value, step, min, max, format, onChange
 
 const styles = StyleSheet.create({
   container: { marginBottom: 14 },
-  label: { fontSize: 13, color: colors.textMuted, marginBottom: 6, fontWeight: '600' },
+  label: { fontSize: 13, color: colors.textMuted, marginBottom: 6, fontFamily: fonts.semiBold },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   button: {
     width: 44,
@@ -43,6 +43,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.primarySoft,
   },
-  buttonText: { fontSize: 22, fontWeight: '700', color: colors.primary },
-  value: { fontSize: 20, fontWeight: '700', color: colors.text },
+  buttonText: { fontSize: 22, fontFamily: fonts.bold, color: colors.primary },
+  value: { fontSize: 20, fontFamily: fonts.bold, color: colors.text },
 });

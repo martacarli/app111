@@ -12,7 +12,8 @@ import { ORS_API_KEY } from '../lib/config';
 import { generateRouteOptions } from '../lib/routing';
 import { computeRegionForCoordinates } from '../lib/mapRegion';
 import Stepper from '../components/Stepper';
-import { colors, radii, shadow } from '../lib/theme';
+import Logo from '../components/Logo';
+import { colors, radii, shadow, fonts } from '../lib/theme';
 
 const MAX_DISTANCE_OVERAGE_METERS = 1000; // "distance shouldn't be more than 1km greater"
 const MAX_DURATION_OVERAGE_MINUTES = 10; // "duration shouldn't be more than 10 min greater"
@@ -173,7 +174,10 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
       {bannerOpen && (
         <ScrollView style={styles.banner} contentContainerStyle={styles.bannerContent}>
           <View style={styles.bannerHeaderRow}>
-            <Text style={styles.title}>Circl'd</Text>
+            <View style={styles.titleRow}>
+              <Logo size={26} />
+              <Text style={styles.title}>Circl'd</Text>
+            </View>
             {options && (
               <TouchableOpacity onPress={() => setBannerOpen(false)}>
                 <Text style={styles.closeBannerText}>Close</Text>
@@ -273,7 +277,8 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
 const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { ...StyleSheet.absoluteFillObject },
-  title: { fontSize: 22, fontWeight: '700', color: colors.text, letterSpacing: 0.2 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  title: { fontSize: 22, fontFamily: fonts.extraBold, color: colors.text, letterSpacing: 0.2 },
   banner: {
     position: 'absolute',
     top: 0,
@@ -287,8 +292,8 @@ const styles = StyleSheet.create({
   },
   bannerContent: { padding: 20, paddingTop: 16 },
   bannerHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
-  closeBannerText: { color: colors.primary, fontWeight: '600' },
-  locationLine: { fontSize: 13, color: colors.primary, marginBottom: 16, fontWeight: '600' },
+  closeBannerText: { color: colors.primary, fontFamily: fonts.semiBold },
+  locationLine: { fontSize: 13, color: colors.primary, marginBottom: 16, fontFamily: fonts.semiBold },
   tabRow: { flexDirection: 'row', marginBottom: 16 },
   tab: {
     flex: 1,
@@ -298,7 +303,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   tabActive: { borderBottomColor: colors.primary },
-  tabText: { fontSize: 15, fontWeight: '600', color: colors.textFaint },
+  tabText: { fontSize: 15, fontFamily: fonts.semiBold, color: colors.textFaint },
   tabTextActive: { color: colors.text },
   toggleRow: { flexDirection: 'row', marginBottom: 14, gap: 8 },
   toggleBtn: {
@@ -311,8 +316,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   toggleBtnActive: { backgroundColor: colors.primary, borderColor: colors.primary },
-  toggleText: { color: colors.text, fontWeight: '600' },
-  toggleTextActive: { color: colors.white, fontWeight: '600' },
+  toggleText: { color: colors.text, fontFamily: fonts.semiBold },
+  toggleTextActive: { color: colors.white, fontFamily: fonts.semiBold },
   errorText: { color: colors.danger, marginBottom: 12, fontSize: 13 },
   generateBtn: {
     backgroundColor: colors.primary,
@@ -321,7 +326,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 4,
   },
-  generateBtnText: { color: colors.white, fontWeight: '700', fontSize: 16 },
+  generateBtnText: { color: colors.white, fontFamily: fonts.bold, fontSize: 16 },
   collapsedBanner: {
     position: 'absolute',
     top: 0,
@@ -339,8 +344,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
   },
-  collapsedBannerText: { fontSize: 15, fontWeight: '700', color: colors.text },
-  collapsedBannerEdit: { color: colors.primary, fontWeight: '600' },
+  collapsedBannerText: { fontSize: 15, fontFamily: fonts.bold, color: colors.text },
+  collapsedBannerEdit: { color: colors.primary, fontFamily: fonts.semiBold },
   cards: {
     position: 'absolute',
     left: 0,
@@ -363,8 +368,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   cardFocused: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
-  cardLabel: { fontSize: 15, fontWeight: '700', color: colors.text },
-  cardStat: { fontSize: 17, fontWeight: '700', marginTop: 6, color: colors.text },
+  cardLabel: { fontSize: 15, fontFamily: fonts.bold, color: colors.text },
+  cardStat: { fontSize: 17, fontFamily: fonts.bold, marginTop: 6, color: colors.text },
   selectBtn: {
     backgroundColor: colors.primary,
     borderRadius: radii.sm,
@@ -372,5 +377,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
-  selectBtnText: { color: colors.white, fontWeight: '700' },
+  selectBtnText: { color: colors.white, fontFamily: fonts.bold },
 });

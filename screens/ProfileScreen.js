@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 
 import { getRunLog, computeRunLogSummary } from '../lib/runLog';
 import { formatDuration } from '../lib/pace';
-import { colors, radii } from '../lib/theme';
+import { colors, radii, fonts } from '../lib/theme';
 
 export default function ProfileScreen({ onViewDisclaimer }) {
   const [summary, setSummary] = useState({ totalRuns: 0, totalDistanceMeters: 0, totalDurationSeconds: 0 });
@@ -42,7 +42,7 @@ export default function ProfileScreen({ onViewDisclaimer }) {
 
 const styles = StyleSheet.create({
   container: { flexGrow: 1, padding: 24, paddingTop: 60, backgroundColor: colors.background },
-  title: { fontSize: 24, fontWeight: '700', marginBottom: 24, color: colors.text },
+  title: { fontSize: 24, fontFamily: fonts.extraBold, marginBottom: 24, color: colors.text },
   statsRow: { flexDirection: 'row', marginBottom: 24 },
   stat: {
     flex: 1,
@@ -52,13 +52,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radii.md,
   },
-  statValue: { fontSize: 22, fontWeight: '700', color: colors.primary },
-  statLabel: { fontSize: 12, color: colors.textMuted, marginTop: 4 },
+  statValue: { fontSize: 22, fontFamily: fonts.extraBold, color: colors.primary },
+  statLabel: { fontSize: 12, color: colors.textMuted, marginTop: 4, fontFamily: fonts.medium },
   linkRow: {
     paddingVertical: 14,
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
-  linkText: { color: colors.primary, fontWeight: '600', fontSize: 15 },
-  aboutText: { fontSize: 12, color: colors.textFaint, marginTop: 32 },
+  linkText: { color: colors.primary, fontFamily: fonts.semiBold, fontSize: 15 },
+  aboutText: { fontSize: 12, color: colors.textFaint, marginTop: 32, fontFamily: fonts.medium },
 });
