@@ -4,7 +4,7 @@ import * as Location from 'expo-location';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 
 import { fetchCrimeData } from '../lib/policeData';
-import { buildAvoidPolygons, describeSafety } from '../lib/safety';
+import { buildAvoidPolygons } from '../lib/safety';
 import { reverseGeocode } from '../lib/geocode';
 import { distanceFromDuration, DEFAULT_PACE_MIN_PER_KM, estimateDurationSeconds, formatDuration } from '../lib/pace';
 import { isLikelyUkPoliceCoverage } from '../lib/ukCoverage';
@@ -288,8 +288,6 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
           {options.map((option, index) => {
             const km = (option.distanceMeters / 1000).toFixed(2);
             const durationSeconds = estimateDurationSeconds(option.distanceMeters, target.activity, target.paceMinPerKm);
-            const hotspotRegionCount = target.avoidPolygons?.meta?.hotspotRegionCount ?? 0;
-            const crimeCount = target.crimes?.length ?? 0;
 
             return (
               <TouchableOpacity
@@ -302,9 +300,6 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
                   {option.directionBucket && <Text style={styles.cardDirection}>{option.directionBucket}</Text>}
                 </View>
                 <Text style={styles.cardStat}>{km} km · about {formatDuration(durationSeconds)}</Text>
-                <Text style={styles.cardMeta}>
-                  {describeSafety(hotspotRegionCount, crimeCount, { inCoverageArea: target.inCoverageArea })}
-                </Text>
 
                 <View style={styles.cardActions}>
                   <TouchableOpacity
@@ -446,7 +441,6 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   cardStat: { fontSize: 17, fontWeight: '700', marginTop: 6 },
-  cardMeta: { fontSize: 12, color: '#555', marginTop: 4, lineHeight: 16 },
   cardActions: { flexDirection: 'row', marginTop: 10 },
   changeBtn: {
     flex: 1,
