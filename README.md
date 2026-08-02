@@ -171,7 +171,24 @@ error on a real iPhone — if you ever bump `expo` further, keep the
   loop and an accurate length match, so most taps use far fewer. This
   trades away most of what used to be a "minimal API overhead" design in
   exchange for stronger retrace-avoidance and more ranked options — worth
-  tuning down (fewer anchors/seeds) if you're on a rate-limited key.
+  tuning down (fewer anchors/seeds) if you're on a rate-limited key. A
+  "Find my route" tap followed quickly by a few "Change Route" taps can
+  add up to 30+ calls within a minute, which is enough to trip a free-tier
+  key's rate limit. When ORS returns a 429, the app degrades gracefully
+  (uses whatever candidates it already has, or shows a clear "rate
+  limited, try again" message on "Find my route") rather than crashing —
+  but it still means fewer or no options that round. If you hit this
+  often, reduce `seeds`/`anchorCount` in `generateRouteOptions`.
+- **Routes can go through places that aren't reliably open to the
+  public** (a university campus, a gated park, etc.) — ORS's
+  `foot-walking` profile routes over OpenStreetMap paths, and OSM doesn't
+  consistently encode "this path is only open certain hours" or
+  private-access restrictions. There's no ORS parameter that guarantees a
+  route only uses always-public paths, so this isn't fixable from the
+  app's side without maintaining a manual list of known-problematic
+  areas (not implemented). Treat generated routes the same way you'd
+  treat any turn-by-turn app in an unfamiliar area — verify locally
+  before relying on it.
 - **Pace is a fixed default per activity (9.5 km/h run, 4.7 km/h walk)**,
   not personalized — there's no in-app run history or health-app
   integration feeding it yet, so duration/distance conversions won't

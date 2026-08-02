@@ -121,6 +121,15 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
         maxOverageMeters,
       });
 
+      if (result.options.length === 0) {
+        setError(
+          result.rateLimited
+            ? 'OpenRouteService is temporarily rate-limiting requests. Wait a moment and try again.'
+            : 'Could not generate a route. Check your OpenRouteService API key and connection.'
+        );
+        return;
+      }
+
       setTarget(nextTarget);
       setOptions(result.options);
       setCandidatePool(result.candidatePool);
