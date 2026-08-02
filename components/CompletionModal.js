@@ -101,7 +101,7 @@ export default function CompletionModal({ visible, activity, distanceMeters, dur
 
           <Animated.View style={{ opacity: buttonOpacity, width: '100%' }}>
             <TouchableOpacity style={styles.doneBtn} onPress={onDismiss}>
-              <Text style={styles.doneBtnText}>Log Run</Text>
+              <Text style={styles.doneBtnText}>Log {activityLabel}</Text>
             </TouchableOpacity>
           </Animated.View>
         </View>
