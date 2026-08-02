@@ -1,16 +1,26 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 import Logo from './Logo';
 import { colors, fonts } from '../lib/theme';
 
-export default function ScreenHeader({ size = 20 }) {
-  return (
-    <View style={styles.row}>
+export default function ScreenHeader({ size = 20, onPress }) {
+  const content = (
+    <>
       <Logo size={size} />
       <Text style={styles.text}>Circl'd</Text>
-    </View>
+    </>
   );
+
+  if (onPress) {
+    return (
+      <TouchableOpacity style={styles.row} onPress={onPress}>
+        {content}
+      </TouchableOpacity>
+    );
+  }
+
+  return <View style={styles.row}>{content}</View>;
 }
 
 const styles = StyleSheet.create({

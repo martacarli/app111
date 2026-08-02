@@ -11,7 +11,7 @@ function formatDate(isoString) {
   return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-export default function RunLogScreen({ onBack }) {
+export default function RunLogScreen({ onBack, onGoHome }) {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -55,7 +55,7 @@ export default function RunLogScreen({ onBack }) {
 
   return (
     <View style={styles.container}>
-      <ScreenHeader />
+      <ScreenHeader onPress={onGoHome} />
       <Text style={styles.title}>Activity Log</Text>
 
       {!loading && entries.length === 0 && (

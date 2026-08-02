@@ -4,11 +4,11 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { colors, radii, shadow, fonts } from '../lib/theme';
 import ScreenHeader from '../components/ScreenHeader';
 
-export default function PrivacyPolicyScreen({ onBack }) {
+export default function PrivacyPolicyScreen({ onBack, onGoHome }) {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <ScreenHeader />
+        <ScreenHeader onPress={onGoHome} />
         <Text style={styles.title}>Privacy Policy</Text>
 
         <Text style={styles.heading}>What Circl'd collects</Text>

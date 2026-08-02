@@ -119,7 +119,7 @@ export default function App() {
           <DisclaimerScreen onAcknowledge={() => setScreen(screenBeforeInfo)} />
         )}
         {screen === 'privacy' && (
-          <PrivacyPolicyScreen onBack={() => setScreen(screenBeforeInfo)} />
+          <PrivacyPolicyScreen onBack={() => setScreen(screenBeforeInfo)} onGoHome={() => handleSelectTab('plan')} />
         )}
         {screen === 'plan' && (
           <PlanScreen
@@ -143,9 +143,15 @@ export default function App() {
             onCancel={handleCancelRun}
           />
         )}
-        {screen === 'log' && <RunLogScreen onBack={() => handleSelectTab('plan')} />}
+        {screen === 'log' && (
+          <RunLogScreen onBack={() => handleSelectTab('plan')} onGoHome={() => handleSelectTab('plan')} />
+        )}
         {screen === 'profile' && (
-          <ProfileScreen onViewDisclaimer={handleViewDisclaimer} onViewPrivacyPolicy={handleViewPrivacyPolicy} />
+          <ProfileScreen
+            onViewDisclaimer={handleViewDisclaimer}
+            onViewPrivacyPolicy={handleViewPrivacyPolicy}
+            onGoHome={() => handleSelectTab('plan')}
+          />
         )}
       </View>
       {showTabBar && <BottomTabBar activeTab={screen} onSelect={handleSelectTab} />}

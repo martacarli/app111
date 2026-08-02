@@ -7,7 +7,7 @@ import { formatDuration } from '../lib/pace';
 import { colors, radii, fonts } from '../lib/theme';
 import ScreenHeader from '../components/ScreenHeader';
 
-export default function ProfileScreen({ onViewDisclaimer, onViewPrivacyPolicy }) {
+export default function ProfileScreen({ onViewDisclaimer, onViewPrivacyPolicy, onGoHome }) {
   const [summary, setSummary] = useState({ totalRuns: 0, totalDistanceMeters: 0, totalDurationSeconds: 0 });
   const [name, setName] = useState(null);
   const [editing, setEditing] = useState(false);
@@ -31,7 +31,7 @@ export default function ProfileScreen({ onViewDisclaimer, onViewPrivacyPolicy })
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <ScreenHeader />
+      <ScreenHeader onPress={onGoHome} />
       <Text style={styles.title}>Profile</Text>
 
       {editing ? (
