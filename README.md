@@ -1,6 +1,6 @@
-# Safe Loop Run: Mobile App Overview
+# Loop'd: Mobile App Overview
 
-Safe Loop Run is a mobile app that generates safe, efficient loop routes back to your starting point. Unlike out-and-back routes that require retracing your steps, Safe Loop Run creates genuine loops that use different streets on the return journey, minimizing backtracking and making runs more interesting and engaging.
+Loop'd is a mobile app that generates safe, efficient loop routes back to your starting point. Unlike out-and-back routes that require retracing your steps, Loop'd creates genuine loops that use different streets on the return journey, minimizing backtracking and making runs more interesting and engaging.
 
 ## Core Purpose
 

@@ -219,7 +219,7 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
       {bannerOpen && (
         <ScrollView style={styles.banner} contentContainerStyle={styles.bannerContent}>
           <View style={styles.bannerHeaderRow}>
-            <Text style={styles.title}>Safe Loop Run</Text>
+            <Text style={styles.title}>Loop'd</Text>
             {options && (
               <TouchableOpacity onPress={() => setBannerOpen(false)}>
                 <Text style={styles.closeBannerText}>Close</Text>
@@ -290,12 +290,6 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
           <TouchableOpacity style={styles.generateBtn} onPress={handleFindRoute} disabled={loading || locating}>
             {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.generateBtnText}>Find my route</Text>}
           </TouchableOpacity>
-
-          <Text style={styles.disclaimer}>
-            Routes are based on reported crime data, which is historical and does not
-            capture every incident or account for time of day. No route can be
-            guaranteed safe. Always stay aware of your surroundings.
-          </Text>
         </ScrollView>
       )}
 
@@ -371,13 +365,14 @@ const styles = StyleSheet.create({
   closeBannerText: { color: '#1e6fff', fontWeight: '600' },
   locationLine: { fontSize: 13, color: '#1e6fff', marginBottom: 16, fontWeight: '600' },
   paceLine: { fontSize: 12, color: '#555', marginBottom: 14 },
-  toggleRow: { flexDirection: 'row', marginBottom: 14 },
+  toggleRow: { flexDirection: 'row', marginBottom: 14, gap: 8 },
   toggleBtn: {
     flex: 1,
     paddingVertical: 10,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#222',
+    borderRadius: 8,
   },
   toggleBtnActive: { backgroundColor: '#222' },
   toggleText: { color: '#222', fontWeight: '600' },
@@ -391,7 +386,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   generateBtnText: { color: '#fff', fontWeight: '700', fontSize: 16 },
-  disclaimer: { fontSize: 11, color: '#888', marginTop: 20, lineHeight: 16 },
   collapsedBanner: {
     position: 'absolute',
     top: 0,
