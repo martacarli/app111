@@ -133,6 +133,9 @@ error on a real iPhone — if you ever bump `expo` further, keep the
   warm neutrals) applied consistently across every screen and component,
   instead of one-off hex values scattered through the codebase.
 - `components/BottomTabBar.js` — persistent Home/Log/Profile tab bar.
+- `components/CompletionModal.js` — the animated "Run/Walk completed!"
+  celebration shown when you stop an activity, before handing off to the
+  Activity Log.
 - `screens/PlanScreen.js` — the map-first plan screen: GPS, a
   collapsible banner over the map for target entry (distance/duration,
   Run/Walk), and once generated, the ranked route cards. Tapping the

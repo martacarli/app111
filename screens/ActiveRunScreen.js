@@ -14,6 +14,7 @@ import { formatStopwatch, formatDuration } from '../lib/pace';
 import { addRunLogEntry, computeActualPace } from '../lib/runLog';
 import { computeRegionForCoordinates } from '../lib/mapRegion';
 import { colors, radii, shadow } from '../lib/theme';
+import CompletionModal from '../components/CompletionModal';
 
 export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLat, startLng, locationLabel, onFinish, onCancel }) {
   const routeCoordinates = route.geojson.coordinates;
@@ -27,6 +28,7 @@ export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLa
   const [progressCoordinates, setProgressCoordinates] = useState([]);
   const [traveledMeters, setTraveledMeters] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [completedEntry, setCompletedEntry] = useState(null);
 
   const watchSubscriptionRef = useRef(null);
   const timerRef = useRef(null);
@@ -133,8 +135,14 @@ export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLa
       console.error(err);
     } finally {
       setSaving(false);
-      onFinish(entry);
+      setCompletedEntry(entry);
     }
+  };
+
+  const handleDismissCompletion = () => {
+    const entry = completedEntry;
+    setCompletedEntry(null);
+    onFinish(entry);
   };
 
   const mapCoordinates = routeCoordinates.map(([lng, lat]) => ({ latitude: lat, longitude: lng }));
@@ -184,6 +192,14 @@ export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLa
           <Text style={styles.actionBtnText}>{running ? 'Stop Run' : 'Start Run'}</Text>
         </TouchableOpacity>
       </View>
+
+      <CompletionModal
+        visible={!!completedEntry}
+        activity={activity}
+        distanceMeters={completedEntry?.distanceMeters ?? 0}
+        durationSeconds={completedEntry?.durationSeconds ?? 0}
+        onDismiss={handleDismissCompletion}
+      />
     </View>
   );
 }
