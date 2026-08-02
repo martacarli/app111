@@ -69,13 +69,15 @@ export default function ProfileScreen({ onViewDisclaimer, onViewPrivacyPolicy })
         </View>
       </View>
 
-      <TouchableOpacity style={styles.linkRow} onPress={onViewDisclaimer}>
-        <Text style={styles.linkText}>Review safety disclaimer</Text>
-      </TouchableOpacity>
+      <View style={styles.linksGroup}>
+        <TouchableOpacity style={styles.linkRow} onPress={onViewDisclaimer}>
+          <Text style={styles.linkText}>Review safety disclaimer</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity style={styles.linkRow} onPress={onViewPrivacyPolicy}>
-        <Text style={styles.linkText}>Privacy Policy</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.linkRow} onPress={onViewPrivacyPolicy}>
+          <Text style={styles.linkText}>Privacy Policy</Text>
+        </TouchableOpacity>
+      </View>
 
       <Text style={styles.aboutText}>Circl'd · v0.1.0</Text>
     </ScrollView>
@@ -128,11 +130,14 @@ const styles = StyleSheet.create({
   },
   statValue: { fontSize: 22, fontFamily: fonts.extraBold, color: colors.primary },
   statLabel: { fontSize: 12, color: colors.textMuted, marginTop: 4, fontFamily: fonts.medium },
-  linkRow: {
-    paddingVertical: 14,
+  linksGroup: {
     borderTopWidth: 1,
     borderTopColor: colors.border,
+    marginTop: 4,
   },
-  linkText: { color: colors.primary, fontFamily: fonts.semiBold, fontSize: 15 },
+  linkRow: {
+    paddingVertical: 8,
+  },
+  linkText: { color: colors.primary, fontFamily: fonts.medium, fontSize: 12 },
   aboutText: { fontSize: 12, color: colors.textFaint, marginTop: 32, fontFamily: fonts.medium },
 });
