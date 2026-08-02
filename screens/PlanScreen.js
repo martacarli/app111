@@ -201,7 +201,7 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
           </View>
 
           <Text style={styles.locationLine}>
-            {locating ? 'Finding your location…' : locationLabel ? `Starting near ${locationLabel}` : 'Location unavailable'}
+            {locating ? 'Finding your location…' : locationLabel ? `📍 ${locationLabel}` : 'Location unavailable'}
           </Text>
 
           <View style={styles.toggleRow}>

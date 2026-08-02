@@ -124,8 +124,9 @@ error on a real iPhone — if you ever bump `expo` further, keep the
 - `lib/mapRegion.js` — computes a MapView region that fits a set of
   points (used to fit the whole loop on screen, instead of a fixed zoom
   that can crop a bigger route).
-- `lib/geocode.js` — reverse geocodes your coordinates to a readable
-  place name.
+- `lib/geocode.js` — reverse geocodes your coordinates to the exact
+  street address (falling back to suburb/city when no street-level data
+  is available).
 - `lib/runLog.js` / `lib/runLogCore.js` — local run history, persisted
   with AsyncStorage, plus `computeRunLogSummary` for the Profile screen's
   totals.
