@@ -8,12 +8,12 @@ Generate running/walking loops that are:
 
 1. **Real loops** — different streets outbound and return; avoiding retraced steps is the primary goal of route selection, only giving way to a retracing route as an extreme exception when no clean loop can be found at all
 2. **Safety-aware** — routed away from recent crime hotspots (UK only, using live data.police.uk data)
-3. **Flexible** — several ranked variants, closest to your target first, capped to no more than 10 min (duration mode) or 1 km (distance mode) over target
+3. **Flexible** — several ranked variants, closest to your target first, all within ±10 min (duration mode) or ±1 km (distance mode) of target
 4. **Customizable** — choose between running or walking, plan by duration or distance using simple +/- stepper buttons
 
 ## Key Features
 
-- **Multiple Ranked Route Options**: After setting a target time or distance, the app generates several routes and ranks them by actual closeness to your target — closest match first, furthest last — capped to no more than 10 minutes (duration mode) or 1 km (distance mode) over your target. Avoiding retraced streets takes priority over hitting that window exactly; retracing is only ever shown as a last resort.
+- **Multiple Ranked Route Options**: After setting a target time or distance, the app generates several routes and ranks them by actual closeness to your target — closest match first, furthest last — all kept within ±10 minutes (duration mode) or ±1 km (distance mode) of your target, whether they'd otherwise be longer or shorter. Avoiding retraced streets takes priority over hitting that window exactly; retracing is only ever shown as a last resort.
 - **Dual Modes**: Select "Run" or "Walk" — the app uses a fixed default pace per activity (9.5 km/h run, 4.7 km/h walk) to estimate duration, independent of OpenRouteService's own assumptions.
 - **Stepper Target Entry**: Set your distance or duration with simple +/- buttons instead of typing a number.
 - **Safety Layer**: If you're in UK coverage (England, Wales, Northern Ireland), the app fetches recent crime reports and routes around high-density hotspots. Non-UK locations show standard loops with a note explaining limited coverage.
