@@ -35,6 +35,7 @@ export default function App() {
   const [planState, setPlanState] = useState({ target: null, options: null });
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [selectedTarget, setSelectedTarget] = useState(null);
+  const [homeResetToken, setHomeResetToken] = useState(0);
 
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
@@ -76,6 +77,16 @@ export default function App() {
     setScreen('disclaimer');
   };
 
+  const handleSelectTab = (tabKey) => {
+    if (tabKey === 'plan') {
+      // Tapping Home should always land on the duration/distance picker,
+      // never resume showing a previously generated route's cards.
+      setPlanState({ target: null, options: null });
+      setHomeResetToken((n) => n + 1);
+    }
+    setScreen(tabKey);
+  };
+
   const showTabBar = TAB_BAR_SCREENS.includes(screen);
 
   if (!fontsLoaded) {
@@ -103,6 +114,7 @@ export default function App() {
         )}
         {screen === 'plan' && (
           <PlanScreen
+            key={homeResetToken}
             inputs={homeInputs}
             onChangeInputs={setHomeInputs}
             initialPlan={planState}
@@ -122,10 +134,10 @@ export default function App() {
             onCancel={handleCancelRun}
           />
         )}
-        {screen === 'log' && <RunLogScreen onBack={() => setScreen('plan')} />}
+        {screen === 'log' && <RunLogScreen onBack={() => handleSelectTab('plan')} />}
         {screen === 'profile' && <ProfileScreen onViewDisclaimer={handleViewDisclaimer} />}
       </View>
-      {showTabBar && <BottomTabBar activeTab={screen} onSelect={setScreen} />}
+      {showTabBar && <BottomTabBar activeTab={screen} onSelect={handleSelectTab} />}
     </SafeAreaView>
   );
 }
