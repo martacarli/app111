@@ -322,11 +322,11 @@ const styles = StyleSheet.create({
   generateBtn: {
     backgroundColor: colors.primary,
     borderRadius: radii.md,
-    paddingVertical: 14,
+    paddingVertical: 12,
     alignItems: 'center',
     marginTop: 4,
   },
-  generateBtnText: { color: colors.white, fontFamily: fonts.bold, fontSize: 16 },
+  generateBtnText: { color: colors.white, fontFamily: fonts.bold, fontSize: 15 },
   collapsedBanner: {
     position: 'absolute',
     top: 0,

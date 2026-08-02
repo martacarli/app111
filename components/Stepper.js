@@ -44,5 +44,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primarySoft,
   },
   buttonText: { fontSize: 22, fontFamily: fonts.bold, color: colors.primary },
-  value: { fontSize: 26, fontFamily: fonts.bold, color: colors.text },
+  value: { fontSize: 22, fontFamily: fonts.bold, color: colors.text },
 });
