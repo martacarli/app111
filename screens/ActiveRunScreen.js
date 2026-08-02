@@ -17,6 +17,12 @@ import { colors, radii, shadow, fonts } from '../lib/theme';
 import CompletionModal from '../components/CompletionModal';
 import Logo from '../components/Logo';
 
+// Generous enough for any realistic gap between GPS fixes (even sprinting
+// for a couple of seconds), while still much smaller than typical route
+// lengths — small enough to rule out ever snapping across a loop to its
+// opposite end.
+const PROGRESS_WINDOW_METERS = 250;
+
 export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLat, startLng, locationLabel, onFinish, onCancel }) {
   const routeCoordinates = route.geojson.coordinates;
   const cumulativeDistances = useMemo(() => buildCumulativeDistances(routeCoordinates), [routeCoordinates]);
@@ -35,6 +41,12 @@ export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLa
   const timerRef = useRef(null);
   const startTimestampRef = useRef(null);
   const lastPositionRef = useRef(null);
+  // Tracks how far along the route we last believed we were, so each new
+  // GPS fix is matched against a window around that position instead of
+  // the whole loop — see lib/progress.js for why an unrestricted search
+  // can otherwise snap all the way to the finish while you're still
+  // standing at the start.
+  const progressAnchorRef = useRef(0);
 
   useEffect(() => {
     return () => {
@@ -59,6 +71,7 @@ export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLa
 
     startTimestampRef.current = Date.now();
     lastPositionRef.current = null;
+    progressAnchorRef.current = 0;
     setElapsedSeconds(0);
     setTraveledMeters(0);
     setProgressFraction(0);
@@ -86,11 +99,19 @@ export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLa
         }
         lastPositionRef.current = point;
 
-        const fraction = computeProgressFraction(point, routeCoordinates, totalRouteDistanceMeters, cumulativeDistances);
+        const anchorOptions = { anchorDistanceMeters: progressAnchorRef.current, windowMeters: PROGRESS_WINDOW_METERS };
+        const fraction = computeProgressFraction(
+          point,
+          routeCoordinates,
+          totalRouteDistanceMeters,
+          cumulativeDistances,
+          anchorOptions
+        );
         setProgressFraction(fraction);
 
-        const projection = projectOntoRoute(point, routeCoordinates, cumulativeDistances);
+        const projection = projectOntoRoute(point, routeCoordinates, cumulativeDistances, anchorOptions);
         if (projection) {
+          progressAnchorRef.current = projection.distanceAlongRouteMeters;
           setProgressCoordinates(
             sliceRouteUpToProgress(
               routeCoordinates,
@@ -166,7 +187,7 @@ export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLa
         <Text style={styles.brandBadgeText}>Circl'd</Text>
       </View>
       <MapView style={styles.map} initialRegion={fittedRegion ?? undefined}>
-        <Polyline coordinates={mapCoordinates} strokeWidth={4} strokeColor={colors.primarySoft} />
+        <Polyline coordinates={mapCoordinates} strokeWidth={4} strokeColor={colors.routePlanned} />
         {progressCoordinates.length > 1 && (
           <Polyline coordinates={progressCoordinates} strokeWidth={5} strokeColor={colors.primary} />
         )}
@@ -194,7 +215,9 @@ export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLa
           onPress={running ? handleStopRun : handleStartRun}
           disabled={saving}
         >
-          <Text style={styles.actionBtnText}>{running ? 'Stop Run' : 'Start Run'}</Text>
+          <Text style={styles.actionBtnText}>
+            {running ? `Stop ${activity === 'walk' ? 'Walk' : 'Run'}` : `Start ${activity === 'walk' ? 'Walk' : 'Run'}`}
+          </Text>
         </TouchableOpacity>
       </View>
 

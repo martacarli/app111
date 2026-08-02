@@ -121,6 +121,12 @@ error on a real iPhone — if you ever bump `expo` further, keep the
   duration estimate.
 - `lib/progress.js` — projects a live GPS fix onto the planned route to
   drive the progress bar and the colored progress line during a run.
+  Matches are anchored to a window around your last known position
+  (`anchorDistanceMeters`/`windowMeters`) rather than searching the
+  whole loop on every fix — otherwise ordinary GPS noise near the
+  shared start/finish point can snap onto the return leg instead of the
+  outbound leg and misreport ~100% progress while you're still standing
+  at the start.
 - `lib/mapRegion.js` — computes a MapView region that fits a set of
   points (used to fit the whole loop on screen, instead of a fixed zoom
   that can crop a bigger route).
