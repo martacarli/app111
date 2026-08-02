@@ -130,6 +130,9 @@ error on a real iPhone — if you ever bump `expo` further, keep the
 - `lib/runLog.js` / `lib/runLogCore.js` — local run history, persisted
   with AsyncStorage, plus `computeRunLogSummary` for the Profile screen's
   totals.
+- `lib/profile.js` / `lib/profileCore.js` — your editable display name,
+  persisted locally with AsyncStorage (the same on-device storage the
+  Activity Log uses — no backend or database involved).
 - `lib/theme.js` — shared color/radius/shadow/font tokens (a deep-violet
   accent on warm neutrals, Poppins throughout) applied consistently
   across every screen and component, instead of one-off hex values and
@@ -149,8 +152,12 @@ error on a real iPhone — if you ever bump `expo` further, keep the
   timer, progress tracking, Start/Stop Run, and a "Cancel" option before
   starting.
 - `screens/RunLogScreen.js` — the Activity Log: history of past runs and walks.
-- `screens/ProfileScreen.js` — aggregate run stats and a link back to
-  the disclaimer.
+- `screens/ProfileScreen.js` — an editable display name, aggregate run
+  stats, and a link back to the disclaimer.
+- `assets/icon.png` / `assets/adaptive-icon.png` — the app icon (the
+  Circl'd loop mark on the brand purple). Only visible in a real
+  standalone build via `eas build` — Expo Go always shows its own icon
+  regardless of what a project sets here.
 
 ## Known Limitations
 
