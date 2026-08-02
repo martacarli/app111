@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native
 
 import { getRunLog, deleteRunLogEntry } from '../lib/runLog';
 import { formatDuration, formatPace } from '../lib/pace';
+import { colors, radii, shadow } from '../lib/theme';
 
 function formatDate(isoString) {
   const date = new Date(isoString);
@@ -74,9 +75,9 @@ export default function RunLogScreen({ onBack }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, paddingTop: 60, backgroundColor: '#fff' },
-  title: { fontSize: 24, fontWeight: '700', marginBottom: 16 },
-  emptyText: { color: '#555', marginBottom: 16 },
+  container: { flex: 1, padding: 24, paddingTop: 60, backgroundColor: colors.background },
+  title: { fontSize: 24, fontWeight: '700', marginBottom: 16, color: colors.text },
+  emptyText: { color: colors.textMuted, marginBottom: 16 },
   list: { paddingBottom: 16 },
   row: {
     flexDirection: 'row',
@@ -84,19 +85,20 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: colors.border,
   },
   rowMain: { flex: 1, paddingRight: 12 },
-  rowTitle: { fontSize: 15, fontWeight: '700' },
-  rowStat: { fontSize: 13, color: '#333', marginTop: 2 },
-  rowMeta: { fontSize: 12, color: '#777', marginTop: 2 },
-  deleteText: { color: '#c0392b', fontWeight: '600' },
+  rowTitle: { fontSize: 15, fontWeight: '700', color: colors.text },
+  rowStat: { fontSize: 13, color: colors.textMuted, marginTop: 2 },
+  rowMeta: { fontSize: 12, color: colors.textFaint, marginTop: 2 },
+  deleteText: { color: colors.danger, fontWeight: '600' },
   backBtn: {
-    backgroundColor: '#222',
-    borderRadius: 10,
+    backgroundColor: colors.primary,
+    borderRadius: radii.md,
     paddingVertical: 14,
     alignItems: 'center',
     marginTop: 12,
+    ...shadow,
   },
-  backBtnText: { color: '#fff', fontWeight: '700' },
+  backBtnText: { color: colors.white, fontWeight: '700' },
 });

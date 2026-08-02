@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 
 import { acknowledgeDisclaimer } from '../lib/disclaimer';
+import { colors, radii, shadow } from '../lib/theme';
 
 export default function DisclaimerScreen({ onAcknowledge }) {
   const [saving, setSaving] = useState(false);
@@ -57,18 +58,19 @@ export default function DisclaimerScreen({ onAcknowledge }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: colors.background },
   content: { padding: 24, paddingTop: 60, paddingBottom: 16 },
-  title: { fontSize: 24, fontWeight: '700', marginBottom: 16 },
-  heading: { fontSize: 15, fontWeight: '700', marginTop: 16, marginBottom: 4 },
-  paragraph: { fontSize: 14, color: '#333', lineHeight: 20 },
+  title: { fontSize: 24, fontWeight: '700', marginBottom: 16, color: colors.text },
+  heading: { fontSize: 15, fontWeight: '700', marginTop: 16, marginBottom: 4, color: colors.text },
+  paragraph: { fontSize: 14, color: colors.textMuted, lineHeight: 20 },
   ackBtn: {
-    backgroundColor: '#222',
-    borderRadius: 10,
+    backgroundColor: colors.primary,
+    borderRadius: radii.md,
     paddingVertical: 14,
     alignItems: 'center',
     marginHorizontal: 24,
     marginBottom: 32,
+    ...shadow,
   },
-  ackBtnText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  ackBtnText: { color: colors.white, fontWeight: '700', fontSize: 16 },
 });

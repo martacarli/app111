@@ -9,6 +9,7 @@ import RunLogScreen from './screens/RunLogScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import BottomTabBar from './components/BottomTabBar';
 import { isDisclaimerAcknowledged } from './lib/disclaimer';
+import { colors } from './lib/theme';
 
 const DEFAULT_HOME_INPUTS = {
   mode: 'duration', // 'distance' | 'duration'
@@ -67,7 +68,7 @@ export default function App() {
       <View style={styles.content}>
         {screen === 'checking' && (
           <View style={styles.centered}>
-            <ActivityIndicator size="large" />
+            <ActivityIndicator size="large" color={colors.primary} />
           </View>
         )}
         {screen === 'disclaimer' && (
@@ -103,7 +104,7 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: colors.background },
   content: { flex: 1 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });

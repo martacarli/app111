@@ -129,6 +129,9 @@ error on a real iPhone — if you ever bump `expo` further, keep the
 - `lib/runLog.js` / `lib/runLogCore.js` — local run history, persisted
   with AsyncStorage, plus `computeRunLogSummary` for the Profile screen's
   totals.
+- `lib/theme.js` — shared color/radius/shadow tokens (a violet accent on
+  warm neutrals) applied consistently across every screen and component,
+  instead of one-off hex values scattered through the codebase.
 - `components/BottomTabBar.js` — persistent Home/Log/Profile tab bar.
 - `screens/PlanScreen.js` — the map-first plan screen: GPS, a
   collapsible banner over the map for target entry (distance/duration,

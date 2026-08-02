@@ -13,6 +13,7 @@ import {
 import { formatStopwatch, formatDuration } from '../lib/pace';
 import { addRunLogEntry, computeActualPace } from '../lib/runLog';
 import { computeRegionForCoordinates } from '../lib/mapRegion';
+import { colors, radii, shadow } from '../lib/theme';
 
 export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLat, startLng, locationLabel, onFinish, onCancel }) {
   const routeCoordinates = route.geojson.coordinates;
@@ -152,13 +153,13 @@ export default function ActiveRunScreen({ route, activity, paceMinPerKm, startLa
         </TouchableOpacity>
       )}
       <MapView style={styles.map} initialRegion={fittedRegion ?? undefined}>
-        <Polyline coordinates={mapCoordinates} strokeWidth={4} strokeColor="#c7d4ea" />
+        <Polyline coordinates={mapCoordinates} strokeWidth={4} strokeColor={colors.primarySoft} />
         {progressCoordinates.length > 1 && (
-          <Polyline coordinates={progressCoordinates} strokeWidth={5} strokeColor="#1e6fff" />
+          <Polyline coordinates={progressCoordinates} strokeWidth={5} strokeColor={colors.primary} />
         )}
         <Marker coordinate={{ latitude: startLat, longitude: startLng }} title="Start / Finish" />
         {currentPosition && (
-          <Marker coordinate={{ latitude: currentPosition.lat, longitude: currentPosition.lng }} title="You" pinColor="#1e6fff" />
+          <Marker coordinate={{ latitude: currentPosition.lat, longitude: currentPosition.lng }} title="You" pinColor={colors.primary} />
         )}
       </MapView>
 
@@ -195,37 +196,38 @@ const styles = StyleSheet.create({
     top: 16,
     left: 16,
     zIndex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
+    borderRadius: radii.pill,
+    ...shadow,
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 1 },
     elevation: 3,
   },
-  cancelBtnText: { color: '#1e6fff', fontWeight: '600' },
+  cancelBtnText: { color: colors.primary, fontWeight: '600' },
   panel: {
     padding: 20,
     paddingBottom: 36,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
+    backgroundColor: colors.surface,
+    borderTopLeftRadius: radii.lg,
+    borderTopRightRadius: radii.lg,
+    ...shadow,
+    shadowOffset: { width: 0, height: -2 },
   },
-  stat: { fontSize: 18, fontWeight: '700', marginBottom: 10 },
-  timer: { fontSize: 40, fontWeight: '800', textAlign: 'center', marginBottom: 10 },
+  stat: { fontSize: 18, fontWeight: '700', marginBottom: 10, color: colors.text },
+  timer: { fontSize: 40, fontWeight: '800', textAlign: 'center', marginBottom: 10, color: colors.text },
   progressBarTrack: {
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#eee',
+    backgroundColor: colors.border,
     overflow: 'hidden',
     marginBottom: 6,
   },
-  progressBarFill: { height: 8, backgroundColor: '#1e6fff' },
-  progressLabel: { fontSize: 12, color: '#555', marginBottom: 16, textAlign: 'center' },
-  actionBtn: { borderRadius: 10, paddingVertical: 14, alignItems: 'center' },
-  startBtn: { backgroundColor: '#222' },
-  stopBtn: { backgroundColor: '#c0392b' },
-  actionBtnText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  progressBarFill: { height: 8, backgroundColor: colors.primary },
+  progressLabel: { fontSize: 12, color: colors.textMuted, marginBottom: 16, textAlign: 'center' },
+  actionBtn: { borderRadius: radii.md, paddingVertical: 14, alignItems: 'center' },
+  startBtn: { backgroundColor: colors.primary },
+  stopBtn: { backgroundColor: colors.danger },
+  actionBtnText: { color: colors.white, fontWeight: '700', fontSize: 16 },
 });

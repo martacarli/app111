@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
+import { colors } from '../lib/theme';
+
 const TABS = [
   { key: 'plan', label: 'Home' },
   { key: 'log', label: 'Log' },
@@ -26,14 +28,14 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     borderTopWidth: 1,
-    borderTopColor: '#eee',
-    backgroundColor: '#fff',
+    borderTopColor: colors.border,
+    backgroundColor: colors.surface,
   },
   tab: {
     flex: 1,
     alignItems: 'center',
     paddingVertical: 12,
   },
-  label: { fontSize: 13, fontWeight: '600', color: '#888' },
-  labelActive: { color: '#1e6fff' },
+  label: { fontSize: 13, fontWeight: '600', color: colors.textFaint },
+  labelActive: { color: colors.primary },
 });
