@@ -41,7 +41,17 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
   const [error, setError] = useState(null);
   const [focusedIndex, setFocusedIndex] = useState(0);
 
+  // How much of the screen the banner/cards overlays actually cover, so the
+  // map can center points within the visible remainder instead of the full
+  // screen (which would put them behind whichever overlay is showing).
+  const [topOverlayHeight, setTopOverlayHeight] = useState(0);
+  const [bottomOverlayHeight, setBottomOverlayHeight] = useState(0);
+
   const mapRef = useRef(null);
+
+  useEffect(() => {
+    if (!options) setBottomOverlayHeight(0);
+  }, [options]);
 
   useEffect(() => {
     refreshLocation();
@@ -174,19 +184,24 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
 
   return (
     <View style={styles.container}>
-      <MapView ref={mapRef} style={styles.map} region={mapRegion ?? undefined} showsUserLocation showsMyLocationButton={false}>
+      <MapView
+        ref={mapRef}
+        style={styles.map}
+        region={mapRegion ?? undefined}
+        showsUserLocation
+        showsMyLocationButton={false}
+        mapPadding={{ top: topOverlayHeight, right: 0, bottom: bottomOverlayHeight, left: 0 }}
+      >
         {showRoute && <Polyline coordinates={toMapCoordinates(focused)} strokeWidth={4} strokeColor={colors.primary} />}
         {startLat !== null && startLng !== null && (
           <Marker coordinate={{ latitude: startLat, longitude: startLng }} title="Start / Finish" />
         )}
       </MapView>
 
-      {!bannerOpen && (
-        <RecenterButton style={[styles.recenterBtn, options ? styles.recenterBtnAboveCards : null]} onPress={handleRecenter} />
-      )}
+      <RecenterButton style={[styles.recenterBtn, { top: topOverlayHeight + 16 }]} onPress={handleRecenter} />
 
       {!bannerOpen && (
-        <View style={styles.collapsedBanner}>
+        <View style={styles.collapsedBanner} onLayout={(e) => setTopOverlayHeight(e.nativeEvent.layout.height)}>
           <TouchableOpacity style={styles.collapsedBannerRow} onPress={() => setBannerOpen(true)}>
             <View style={styles.collapsedBannerLeft}>
               <Logo size={18} />
@@ -200,7 +215,11 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
       )}
 
       {bannerOpen && (
-        <ScrollView style={styles.banner} contentContainerStyle={styles.bannerContent}>
+        <ScrollView
+          style={styles.banner}
+          contentContainerStyle={styles.bannerContent}
+          onLayout={(e) => setTopOverlayHeight(e.nativeEvent.layout.height)}
+        >
           <View style={styles.bannerHeaderRow}>
             <View style={styles.titleRow}>
               <Logo size={26} />
@@ -276,7 +295,11 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
       )}
 
       {!bannerOpen && options && (
-        <ScrollView style={styles.cards} contentContainerStyle={styles.cardsContent}>
+        <ScrollView
+          style={styles.cards}
+          contentContainerStyle={styles.cardsContent}
+          onLayout={(e) => setBottomOverlayHeight(e.nativeEvent.layout.height)}
+        >
           {options.map((option, index) => {
             const km = (option.distanceMeters / 1000).toFixed(2);
             const durationSeconds = estimateDurationSeconds(option.distanceMeters, target.activity, target.paceMinPerKm);
@@ -308,10 +331,8 @@ const styles = StyleSheet.create({
   recenterBtn: {
     position: 'absolute',
     right: 16,
-    bottom: 16,
     zIndex: 1,
   },
-  recenterBtnAboveCards: { bottom: '48%' },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   title: { fontSize: 22, fontFamily: fonts.extraBold, color: colors.text, letterSpacing: 0.2 },
   banner: {

@@ -153,8 +153,11 @@ error on a real iPhone — if you ever bump `expo` further, keep the
   celebration (green success badge, confetti burst) shown when you stop
   an activity, before handing off to the Activity Log.
 - `screens/PlanScreen.js` — the map-first plan screen: GPS (centered on
-  your location, native "you are here" dot, free to pan with a
-  `RecenterButton` to snap back), a collapsible banner over the map for
+  your location within whatever portion of the map is actually visible
+  — via `mapPadding`, so the banner/cards overlays don't push the true
+  center off to one side — native "you are here" dot, free to pan with a
+  `RecenterButton`, visible in every state including the initial target-
+  entry form, to snap back), a collapsible banner over the map for
   target entry (distance/duration, Run/Walk), and once generated, the
   ranked route cards. Tapping the collapsed summary reopens the banner
   to edit your target — no separate "back" screen needed.
