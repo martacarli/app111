@@ -152,11 +152,12 @@ error on a real iPhone — if you ever bump `expo` further, keep the
 - `components/CompletionModal.js` — the animated "Run/Walk completed!"
   celebration (green success badge, confetti burst) shown when you stop
   an activity, before handing off to the Activity Log.
-- `screens/PlanScreen.js` — the map-first plan screen: GPS, a
-  collapsible banner over the map for target entry (distance/duration,
-  Run/Walk), and once generated, the ranked route cards. Tapping the
-  collapsed summary reopens the banner to edit your target — no separate
-  "back" screen needed.
+- `screens/PlanScreen.js` — the map-first plan screen: GPS (centered on
+  your location, native "you are here" dot, free to pan with a
+  `RecenterButton` to snap back), a collapsible banner over the map for
+  target entry (distance/duration, Run/Walk), and once generated, the
+  ranked route cards. Tapping the collapsed summary reopens the banner
+  to edit your target — no separate "back" screen needed.
 - `screens/ActiveRunScreen.js` — live map (fit to the full route, native
   "you are here" dot, free to pan with a `components/RecenterButton.js`
   to snap back to your location), timer, progress tracking, Start/Stop,

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, ScrollView } from 'react-native';
 import * as Location from 'expo-location';
 import MapView, { Polyline, Marker } from 'react-native-maps';
@@ -13,10 +13,12 @@ import { generateRouteOptions } from '../lib/routing';
 import { computeRegionForCoordinates } from '../lib/mapRegion';
 import Stepper from '../components/Stepper';
 import Logo from '../components/Logo';
+import RecenterButton from '../components/RecenterButton';
 import { colors, radii, shadow, fonts } from '../lib/theme';
 
 const MAX_DISTANCE_OVERAGE_METERS = 1000; // "distance shouldn't be more than 1km greater"
 const MAX_DURATION_OVERAGE_MINUTES = 10; // "duration shouldn't be more than 10 min greater"
+const RECENTER_DELTA = 0.01;
 
 function toMapCoordinates(candidate) {
   return candidate.geojson.coordinates.map(([lng, lat]) => ({ latitude: lat, longitude: lng }));
@@ -39,6 +41,8 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
   const [error, setError] = useState(null);
   const [focusedIndex, setFocusedIndex] = useState(0);
 
+  const mapRef = useRef(null);
+
   useEffect(() => {
     refreshLocation();
   }, []);
@@ -53,18 +57,34 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert('Location needed', 'This app needs your location to build a route from where you are.');
-        return;
+        return null;
       }
       const position = await Location.getCurrentPositionAsync({});
-      setStartLat(position.coords.latitude);
-      setStartLng(position.coords.longitude);
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      setStartLat(lat);
+      setStartLng(lng);
 
-      const { label } = await reverseGeocode(position.coords.latitude, position.coords.longitude);
+      const { label } = await reverseGeocode(lat, lng);
       setLocationLabel(label);
+      return { lat, lng };
     } catch (err) {
       console.error(err);
+      return null;
     } finally {
       setLocating(false);
+    }
+  };
+
+  const handleRecenter = async () => {
+    const fresh = await refreshLocation();
+    const lat = fresh?.lat ?? startLat;
+    const lng = fresh?.lng ?? startLng;
+    if (lat != null && lng != null) {
+      mapRef.current?.animateToRegion(
+        { latitude: lat, longitude: lng, latitudeDelta: RECENTER_DELTA, longitudeDelta: RECENTER_DELTA },
+        400
+      );
     }
   };
 
@@ -154,12 +174,16 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} region={mapRegion ?? undefined}>
+      <MapView ref={mapRef} style={styles.map} region={mapRegion ?? undefined} showsUserLocation showsMyLocationButton={false}>
         {showRoute && <Polyline coordinates={toMapCoordinates(focused)} strokeWidth={4} strokeColor={colors.primary} />}
         {startLat !== null && startLng !== null && (
           <Marker coordinate={{ latitude: startLat, longitude: startLng }} title="Start / Finish" />
         )}
       </MapView>
+
+      {!bannerOpen && (
+        <RecenterButton style={[styles.recenterBtn, options ? styles.recenterBtnAboveCards : null]} onPress={handleRecenter} />
+      )}
 
       {!bannerOpen && (
         <View style={styles.collapsedBanner}>
@@ -281,6 +305,13 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
 const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { ...StyleSheet.absoluteFillObject },
+  recenterBtn: {
+    position: 'absolute',
+    right: 16,
+    bottom: 16,
+    zIndex: 1,
+  },
+  recenterBtnAboveCards: { bottom: '48%' },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   title: { fontSize: 22, fontFamily: fonts.extraBold, color: colors.text, letterSpacing: 0.2 },
   banner: {
