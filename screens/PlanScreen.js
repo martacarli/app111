@@ -6,7 +6,8 @@ import MapView, { Polyline, Marker } from 'react-native-maps';
 import { fetchCrimeData } from '../lib/policeData';
 import { buildAvoidPolygons } from '../lib/safety';
 import { reverseGeocode } from '../lib/geocode';
-import { distanceFromDuration, DEFAULT_PACE_MIN_PER_KM, estimateDurationSeconds, formatDuration } from '../lib/pace';
+import { distanceFromDuration, getPaceMinPerKm, DEFAULT_PACE_TIER, estimateDurationSeconds, formatDuration } from '../lib/pace';
+import { getPaceTier } from '../lib/paceTier';
 import { isLikelyUkPoliceCoverage } from '../lib/ukCoverage';
 import { ORS_API_KEY } from '../lib/config';
 import { generateRouteOptions } from '../lib/routing';
@@ -26,7 +27,9 @@ function toMapCoordinates(candidate) {
 
 export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStateChange, onSelectRoute }) {
   const { mode, distanceKm, durationMin, activity } = inputs;
-  const paceMinPerKm = DEFAULT_PACE_MIN_PER_KM[activity];
+
+  const [paceTier, setPaceTier] = useState(DEFAULT_PACE_TIER);
+  const paceMinPerKm = getPaceMinPerKm(paceTier, activity);
 
   const [locating, setLocating] = useState(true);
   const [startLat, setStartLat] = useState(initialPlan?.target?.startLat ?? null);
@@ -55,6 +58,7 @@ export default function PlanScreen({ inputs, onChangeInputs, initialPlan, onStat
 
   useEffect(() => {
     refreshLocation();
+    getPaceTier().then(setPaceTier);
   }, []);
 
   useEffect(() => {

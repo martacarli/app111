@@ -14,7 +14,7 @@ Generate running/walking loops that are:
 ## Key Features
 
 - **Multiple Ranked Route Options**: After setting a target time or distance, the app generates several routes and ranks them by actual closeness to your target — closest match first, furthest last — all kept within ±10 minutes (duration mode) or ±1 km (distance mode) of your target, whether they'd otherwise be longer or shorter. Avoiding retraced streets takes priority over hitting that window exactly; retracing is only ever shown as a last resort.
-- **Dual Modes**: Select "Run" or "Walk" — the app uses a fixed default pace per activity (9.5 km/h run, 4.7 km/h walk) to estimate duration, independent of OpenRouteService's own assumptions.
+- **Dual Modes**: Select "Run" or "Walk" — the app uses a fixed pace per activity and chosen pace tier (Slow/Average/Fast, set on the Profile screen) to estimate duration, independent of OpenRouteService's own assumptions.
 - **Stepper Target Entry**: Set your distance or duration with simple +/- buttons instead of typing a number.
 - **Safety Layer**: If you're in UK coverage (England, Wales, Northern Ireland), the app fetches recent crime reports and routes around high-density hotspots. Non-UK locations show standard loops with a note explaining limited coverage.
 - **Run Tracking**: After selecting a route, tap "Start Run"/"Start Walk" to begin. If you planned by duration, a live stopwatch is shown; if you planned by distance, a live "distance covered" readout is shown instead, plus a progress bar and visual progress indicator tracking your position along the planned route either way. Tap "Stop" to log the activity.
@@ -115,10 +115,14 @@ error on a real iPhone — if you ever bump `expo` further, keep the
 - `lib/stepper.js` / `components/Stepper.js` — the +/- stepper control
   used for distance/duration entry (`clampStep` is the pure clamping
   logic, `Stepper` the UI).
-- `lib/pace.js` — fixed default speeds per activity (9.5 km/h run,
-  4.7 km/h walk — no manual input, no health-app integration yet) and the
-  duration/distance conversions built on them, independent of ORS's own
-  duration estimate.
+- `lib/pace.js` — fixed speeds per activity and pace tier (still no
+  manual numeric input, no health-app integration): Slow (3.5 km/h walk
+  / 7.5 km/h run), Average (4.7 / 9.5 — the original defaults), Fast
+  (6.0 / 12.0), plus the duration/distance conversions built on them,
+  independent of ORS's own duration estimate.
+- `lib/paceTier.js` / `lib/paceTierCore.js` — the chosen pace tier,
+  persisted with AsyncStorage and picked from Profile → Pace. PlanScreen
+  reads it on every mount so a change takes effect on your next plan.
 - `lib/progress.js` — projects a live GPS fix onto the planned route to
   drive the progress bar and the colored progress line during a run.
   Matches are anchored to a window around your last known position
@@ -261,10 +265,11 @@ code changes):
   areas (not implemented). Treat generated routes the same way you'd
   treat any turn-by-turn app in an unfamiliar area — verify locally
   before relying on it.
-- **Pace is a fixed default per activity (9.5 km/h run, 4.7 km/h walk)**,
-  not personalized — there's no in-app run history or health-app
-  integration feeding it yet, so duration/distance conversions won't
-  reflect your actual pace.
+- **Pace is a fixed speed per activity and pace tier** (Slow/Average/Fast,
+  chosen on the Profile screen), not personalized to your real pace —
+  there's no in-app run history or health-app integration feeding it
+  yet, so duration/distance conversions reflect the chosen tier's fixed
+  speed, not your actual measured pace.
 - **Reverse geocoding uses the public Nominatim API**, which has a strict
   rate limit (~1 request/second) — fine for this app's one-lookup-per-
   open pattern, but don't call it more often.

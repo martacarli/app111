@@ -3,20 +3,30 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 
 
 import { getRunLog, computeRunLogSummary } from '../lib/runLog';
 import { getProfile, saveProfileName } from '../lib/profile';
-import { formatDuration } from '../lib/pace';
+import { getPaceTier, savePaceTier } from '../lib/paceTier';
+import { formatDuration, PACE_TIER_LABELS, DEFAULT_PACE_TIER, getSpeedKmh } from '../lib/pace';
 import { colors, radii, fonts } from '../lib/theme';
 import ScreenHeader from '../components/ScreenHeader';
+
+const PACE_TIER_ORDER = ['slow', 'average', 'fast'];
 
 export default function ProfileScreen({ onViewDisclaimer, onViewPrivacyPolicy, onGoHome }) {
   const [summary, setSummary] = useState({ totalRuns: 0, totalDistanceMeters: 0, totalDurationSeconds: 0 });
   const [name, setName] = useState(null);
   const [editing, setEditing] = useState(false);
   const [draftName, setDraftName] = useState('');
+  const [paceTier, setPaceTier] = useState(DEFAULT_PACE_TIER);
 
   useEffect(() => {
     getRunLog().then((log) => setSummary(computeRunLogSummary(log)));
     getProfile().then((profile) => setName(profile.name));
+    getPaceTier().then(setPaceTier);
   }, []);
+
+  const handleSelectPaceTier = async (tier) => {
+    setPaceTier(tier);
+    await savePaceTier(tier);
+  };
 
   const handleStartEditing = () => {
     setDraftName(name ?? '');
@@ -70,6 +80,26 @@ export default function ProfileScreen({ onViewDisclaimer, onViewPrivacyPolicy, o
           <Text style={styles.statLabel}>Total time</Text>
         </View>
       </View>
+
+      <Text style={styles.sectionLabel}>Pace</Text>
+      <View style={styles.paceRow}>
+        {PACE_TIER_ORDER.map((tier) => {
+          const active = paceTier === tier;
+          return (
+            <TouchableOpacity
+              key={tier}
+              style={[styles.paceBtn, active && styles.paceBtnActive]}
+              onPress={() => handleSelectPaceTier(tier)}
+            >
+              <Text style={active ? styles.paceBtnTextActive : styles.paceBtnText}>{PACE_TIER_LABELS[tier]}</Text>
+              <Text style={active ? styles.paceBtnSubTextActive : styles.paceBtnSubText}>
+                {getSpeedKmh(tier, 'walk')} · {getSpeedKmh(tier, 'run')} km/h
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+      <Text style={styles.paceHint}>Walk · Run speed used to plan your routes.</Text>
 
       <View style={styles.linksGroup}>
         <TouchableOpacity style={styles.linkRow} onPress={onViewDisclaimer}>
@@ -132,6 +162,23 @@ const styles = StyleSheet.create({
   },
   statValue: { fontSize: 22, fontFamily: fonts.extraBold, color: colors.primary },
   statLabel: { fontSize: 12, color: colors.textMuted, marginTop: 4, fontFamily: fonts.medium },
+  sectionLabel: { fontSize: 13, fontFamily: fonts.semiBold, color: colors.textMuted, marginBottom: 8 },
+  paceRow: { flexDirection: 'row', gap: 8, marginBottom: 6 },
+  paceBtn: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.md,
+    backgroundColor: colors.surface,
+  },
+  paceBtnActive: { backgroundColor: colors.primary, borderColor: colors.primary },
+  paceBtnText: { color: colors.text, fontFamily: fonts.semiBold, fontSize: 14 },
+  paceBtnTextActive: { color: colors.white, fontFamily: fonts.semiBold, fontSize: 14 },
+  paceBtnSubText: { color: colors.textMuted, fontFamily: fonts.regular, fontSize: 11, marginTop: 2 },
+  paceBtnSubTextActive: { color: colors.primarySoft, fontFamily: fonts.regular, fontSize: 11, marginTop: 2 },
+  paceHint: { fontSize: 11, color: colors.textFaint, fontFamily: fonts.regular, marginBottom: 24 },
   linksGroup: {
     borderTopWidth: 1,
     borderTopColor: colors.border,
