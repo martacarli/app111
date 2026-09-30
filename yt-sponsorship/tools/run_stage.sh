@@ -2,7 +2,8 @@
 # Push one stage's R kernel to Kaggle, wait for it to finish, and fetch ONLY
 # its log and small text summaries (never the data files).
 # Usage: tools/run_stage.sh kernels/01-inspect
-# Needs KAGGLE_USERNAME plus KAGGLE_API_TOKEN (or KAGGLE_KEY) in the environment.
+# Needs KAGGLE_USERNAME plus KAGGLE_API_TOKEN (new tokens) or KAGGLE_KEY (legacy
+# kaggle.json key) in the environment. Normally run by .github/workflows/kaggle-stage.yml.
 set -euo pipefail
 dir="$1"
 : "${KAGGLE_USERNAME:?set KAGGLE_USERNAME}"
@@ -17,8 +18,10 @@ df_before=$(df --output=avail -k / | tail -1)
 
 kaggle kernels push -p "$work"
 echo "pushed $slug, polling..."
+deadline=$(( $(date +%s) + ${MAX_WAIT_MIN:-600} * 60 ))
 while true; do
   sleep 30
+  if [ "$(date +%s)" -gt "$deadline" ]; then echo "still running on Kaggle; fetch the log later"; break; fi
   st="$(kaggle kernels status "$slug" 2>&1 || true)"
   echo "$(date -u +%H:%M:%S) $st"
   case "$st" in *COMPLETE*|*ERROR*|*CANCEL*) break;; esac
