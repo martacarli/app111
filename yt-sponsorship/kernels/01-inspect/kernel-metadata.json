@@ -1,0 +1,13 @@
+{
+  "id": "__USER__/ytsp-01-inspect",
+  "title": "ytsp-01-inspect",
+  "code_file": "inspect.R",
+  "language": "r",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_internet": true,
+  "dataset_sources": ["rsrishav/youtube-trending-video-dataset"],
+  "kernel_sources": [],
+  "competition_sources": []
+}
